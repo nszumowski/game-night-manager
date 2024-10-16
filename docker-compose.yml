@@ -6,7 +6,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - MONGO_URI=mongodb://mongo:27017/game-night-manager
+      - MONGO_URI=${MONGO_URI}
     depends_on:
       - mongo
 
@@ -20,7 +20,7 @@ services:
       - backend
 
   mongo:
-    image: mongo:4.4
+    image: mongo
     ports:
       - "27017:27017"
     volumes:
