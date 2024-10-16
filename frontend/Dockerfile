@@ -1,16 +1,16 @@
 # Use an official Node.js runtime as a parent image
-FROM node:14
+FROM node:14 AS build
 
-# Set the working directory
+# Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Copy package.json and package-lock.json from the frontend directory on the host
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the application code
+# Copy the rest of the application code from the frontend directory on the host
 COPY . .
 
 # Build the React app
@@ -18,7 +18,7 @@ RUN npm run build
 
 # Use an official Nginx image to serve the built app
 FROM nginx:alpine
-COPY --from=0 /usr/src/app/build /usr/share/nginx/html
+COPY --from=build /usr/src/app/build /usr/share/nginx/html
 
 # Expose the port the app runs on
 EXPOSE 80
