@@ -6,16 +6,20 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(passport.initialize());
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/game-night-manager', { useNewUrlParser: true, useUnifiedTopology: true });
+// Routes
+const users = require('./routes/users');
+app.use('/api/users', users);
 
-// Define routes
-app.use('/api/users', require('./routes/users'));
-app.use('/api/game-nights', require('./routes/gameNights'));
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.log(err));
 
 // Start the server
 const PORT = process.env.PORT || 5000;
