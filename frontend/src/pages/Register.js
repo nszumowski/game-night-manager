@@ -17,8 +17,9 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post('/api/users/register', { name, email, password });
+      const response = await axios.post('http://192.168.0.132:5000/api/users/register', { name, email, password });
       if (response.data.success) {
+        localStorage.setItem('jwtToken', response.data.token); // Store the token in local storage
         history.push('/profile');
       }
     } catch (error) {
@@ -32,19 +33,19 @@ const Register = () => {
       <form onSubmit={handleSubmit}>
         <div>
           <label>Name:</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} required autocomplete="name" />
         </div>
         <div>
           <label>Email:</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autocomplete="email" />
         </div>
         <div>
           <label>Password:</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autocomplete="new-password" />
         </div>
         <div>
           <label>Confirm Password:</label>
-          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autocomplete="new-password" />
         </div>
         <button type="submit">Register</button>
       </form>

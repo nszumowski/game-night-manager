@@ -7,7 +7,12 @@ const Profile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get('/api/users/profile');
+        const token = localStorage.getItem('jwtToken'); // Get the token from local storage
+        const response = await axios.get('http://192.168.0.132:5000/api/users/profile', {
+          headers: {
+            Authorization: token,
+          }
+        });
         setUser(response.data);
       } catch (error) {
         console.error('There was an error fetching the user profile!', error);
