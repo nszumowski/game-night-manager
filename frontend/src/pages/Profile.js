@@ -8,9 +8,13 @@ const Profile = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem('jwtToken'); // Get the token from local storage
+        if (!token) {
+          console.log('No token found');
+          throw new Error('No token found');
+        }
         const response = await axios.get('http://192.168.0.132:5000/api/users/profile', {
           headers: {
-            Authorization: token,
+            Authorization: token // Include the token in the headers
           }
         });
         setUser(response.data);
