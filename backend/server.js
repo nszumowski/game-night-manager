@@ -12,6 +12,8 @@ require('dotenv').config(); // Load .env file
 if (process.env.NODE_ENV !== 'production') {
   console.log('MONGO_URI:', process.env.MONGO_URI); // Verify MONGO_URI value
   console.log('JWT_SECRET:', process.env.JWT_SECRET); // Verify JWT_SECRET value
+  console.log('PORT:', process.env.PORT); // Verify PORT value
+  console.log('NODE_ENV:', process.env.NODE_ENV); // Verify NODE_ENV value
 }
 
 // Register models
