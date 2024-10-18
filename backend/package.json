@@ -21,6 +21,6 @@
   "devDependencies": {
     "nodemon": "^2.0.4"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Nicholas Szumowski",
+  "license": "Proprietary"
 }
