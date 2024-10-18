@@ -4,6 +4,15 @@ const passport = require('passport');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const users = require('./routes/users');
+const path = require('path');
+
+require('dotenv').config(); // Load .env file
+
+// Log environment variables during development
+if (process.env.NODE_ENV !== 'production') {
+  console.log('MONGO_URI:', process.env.MONGO_URI); // Verify MONGO_URI value
+  console.log('JWT_SECRET:', process.env.JWT_SECRET); // Verify JWT_SECRET value
+}
 
 // Register models
 require('./models/User');
@@ -21,6 +30,14 @@ require('./config/passport')(passport);
 
 // Routes
 app.use('/api/users', users);
+
+// Serve static files from the React frontend app
+app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+// Anything that doesn't match the above, send back index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
+});
 
 // Connect to MongoDB
 mongoose
