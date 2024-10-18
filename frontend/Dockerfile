@@ -23,6 +23,7 @@ FROM nginx:alpine
 COPY --from=build /usr/src/app/build /usr/share/nginx/html
 
 # Copy the custom Nginx configuration file
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY nginx.conf /usr/share/nginx/conf.d/default.conf
 
 # Expose the port the app runs on
