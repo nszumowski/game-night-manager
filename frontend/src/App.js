@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import GameNight from './pages/GameNight';
 import Profile from './pages/Profile';
 import Logout from './pages/Logout';
+import Games from './pages/Games';
 import Navbar from './components/Navbar';
 
 function App() {
@@ -25,16 +26,17 @@ function App() {
       <div>
         <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         <Switch>
-          <Route path="/" exact component={Home} />
           <Route path="/login">
             <Login setIsLoggedIn={setIsLoggedIn} />
           </Route>
           <Route path="/register" component={Register} />
           <Route path="/game-night/:id" component={GameNight} />
+          <Route path="/games" component={Games} />
           <Route path="/profile" component={Profile} />
           <Route path="/logout">
             <Logout setIsLoggedIn={setIsLoggedIn} />
           </Route>
+          <Route path="/" exact component={Home} />
         </Switch>
       </div>
     </Router>

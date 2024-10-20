@@ -8,7 +8,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
         <li><Link to="/">Home</Link></li>
         {!isLoggedIn && <li><Link to="/login">Login</Link></li>}
         {!isLoggedIn && <li><Link to="/register">Register</Link></li>}
-        <li><Link to="/game-night/1">Game Night</Link></li>
+        {isLoggedIn && <li><Link to="/games">Games</Link></li>}
         {isLoggedIn && <li><Link to="/profile">Profile</Link></li>}
         {isLoggedIn && <li><Link to="/logout">Logout</Link></li>}
       </ul>

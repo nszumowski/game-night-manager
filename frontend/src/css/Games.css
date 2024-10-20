@@ -1,0 +1,35 @@
+.games-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.game-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.game-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.game-details {
+  flex: 1;
+}
+
+.game-title {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.game-description {
+  font-size: 1em;
+  color: #555;
+}
