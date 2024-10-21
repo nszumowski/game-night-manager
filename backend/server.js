@@ -4,6 +4,7 @@ const passport = require('passport');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const users = require('./routes/users');
+const games = require('./routes/games');
 const path = require('path');
 
 require('dotenv').config(); // Load .env file
@@ -32,6 +33,7 @@ require('./config/passport')(passport);
 
 // Routes
 app.use('/api/users', users);
+app.use('/api/games', games);
 
 // Serve static files from the React frontend app
 app.use(express.static(path.join(__dirname, '../frontend/build')));
