@@ -42,8 +42,6 @@ $RECYCLE.BIN/
 # Docker
 docker-compose.override.yml
 docker-compose.override.yaml
-docker-compose.override.yml
-docker-compose.override.yaml
 .dockerignore
 
 # Build directories
@@ -67,3 +65,6 @@ coverage/
 *.pid.lock
 *.log
 *.log.*
+
+# Vite
+.vite

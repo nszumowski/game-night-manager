@@ -10,11 +10,11 @@ const path = require('path');
 require('dotenv').config(); // Load .env file
 
 // Log environment variables during development
-if (process.env.NODE_ENV !== 'production') {
-  console.log('MONGO_URI:', process.env.MONGO_URI); // Verify MONGO_URI value
-  console.log('JWT_SECRET:', process.env.JWT_SECRET); // Verify JWT_SECRET value
-  console.log('PORT:', process.env.PORT); // Verify PORT value
-  console.log('NODE_ENV:', process.env.NODE_ENV); // Verify NODE_ENV value
+if (import.meta.env.NODE_ENV !== 'production') {
+  console.log('MONGO_URI:', import.meta.env.MONGO_URI); // Verify MONGO_URI value
+  console.log('JWT_SECRET:', import.meta.env.JWT_SECRET); // Verify JWT_SECRET value
+  console.log('PORT:', import.meta.env.PORT); // Verify PORT value
+  console.log('NODE_ENV:', import.meta.env.NODE_ENV); // Verify NODE_ENV value
 }
 
 // Register models
@@ -45,10 +45,10 @@ app.get('*', (req, res) => {
 
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(import.meta.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
 // Start the server
-const PORT = process.env.PORT || 5000;
+const PORT = import.meta.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

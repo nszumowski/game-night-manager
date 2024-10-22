@@ -13,7 +13,7 @@ RUN npm install
 # Copy the rest of the application code from the frontend directory on the host
 COPY . .
 
-# Build the React app
+# Build the React app with Vite
 RUN npm run build
 
 # Use an official Nginx image to serve the built app
