@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../css/Games.css';
 
 const Games = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,7 +17,9 @@ const Games = () => {
     setCurrentPage(1); // Reset to the first page on new search
 
     try {
-      const response = await axios.get(`http://192.168.0.132:5000/api/games/search?query=${searchTerm}`);
+      const response = await axios.get('/api/games/search', {
+        params: { query: searchTerm }
+      });
       const gamesArray = response.data;
       setGames(gamesArray);
       setTotalPages(Math.ceil(gamesArray.length / 25)); // Calculate total pages
@@ -33,7 +34,9 @@ const Games = () => {
   const fetchDetailedGames = async (games) => {
     try {
       const detailedGamesArray = await Promise.all(games.map(async (game) => {
-        const response = await axios.get(`http://192.168.0.132:5000/api/games/details?id=${game.id}`);
+        const response = await axios.get('/api/games/details', {
+          params: { id: game.id }
+        });
         const gameDetails = response.data;
         return { ...game, ...gameDetails };
       }));
@@ -51,34 +54,33 @@ const Games = () => {
   };
 
   return (
-    <div>
-      <h1>Search for Board Games</h1>
-      <form onSubmit={handleSearch}>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Search for Board Games</h1>
+      <form onSubmit={handleSearch} className="mb-4">
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Enter game name"
           required
+          className="border p-2 rounded w-full"
         />
-        <button type="submit">Search</button>
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded mt-2">Search</button>
       </form>
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
-      <div className="games-container">
+      <div className="flex flex-col gap-5">
         {detailedGames.map(game => (
-          <div key={game.id} className="game-item">
-            <h2 className="game-title">{game.title} ({game.year})</h2>
-            <div className="game-details">
-              <img src={game.image} alt="Game" className="game-image" />
-              <p className="game-description">{game.description}</p>
+          <div key={game.id} className="flex flex-col border border-gray-300 p-5 rounded shadow">
+            <h2 className="text-xl font-bold mb-5">{game.title} ({game.year})</h2>
+            <div className="flex">
+              <img src={game.image} alt="Game" className="max-w-xs max-h-xs object-contain rounded border border-gray-200 p-2" />
+              <p className="text-gray-700 mx-5">{game.description}</p>
             </div>
-            {/* {process.env.NODE_ENV === 'development' && ( */}
-            <details>
-              <summary>Show Raw Data</summary>
-              <pre>{game.rawData}</pre>
+            <details className="mt-2">
+              <summary className="cursor-pointer text-blue-500">Show Raw Data</summary>
+              <pre className="bg-gray-100 p-2 rounded">{game.rawData}</pre>
             </details>
-            {/* )} */}
           </div>
         ))}
       </div>
@@ -98,11 +100,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   }
 
   return (
-    <div className="pagination">
+    <div className="flex justify-center mt-5">
       {pages.map(page => (
         <button
           key={page}
-          className={page === currentPage ? 'active' : ''}
+          className={`mx-1 px-3 py-1 border rounded ${page === currentPage ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'}`}
           onClick={() => onPageChange(page)}
         >
           {page}

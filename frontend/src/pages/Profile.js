@@ -9,12 +9,11 @@ const Profile = () => {
       try {
         const token = localStorage.getItem('jwtToken'); // Get the token from local storage
         if (!token) {
-          console.log('No token found');
           throw new Error('No token found');
         }
         const response = await axios.get('http://192.168.0.132:5000/api/users/profile', {
           headers: {
-            Authorization: token // Include the token in the headers
+            Authorization: `Bearer ${token}` // Include the token in the headers
           }
         });
         setUser(response.data);
@@ -27,15 +26,15 @@ const Profile = () => {
   }, []);
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <div className="container mx-auto p-4">Loading...</div>;
   }
 
   return (
-    <div>
-      <h1>Profile</h1>
-      <p>Name: {user.name}</p>
-      <p>Email: {user.email}</p>
-      <p>Date Registered: {new Date(user.date).toLocaleDateString()}</p>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Profile</h1>
+      <p className="text-gray-700">Name: {user.name}</p>
+      <p className="text-gray-700">Email: {user.email}</p>
+      <p className="text-gray-700">Date Registered: {new Date(user.date).toLocaleDateString()}</p>
     </div>
   );
 };

@@ -28,26 +28,54 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <h1>Register for Game Night Manager</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} required autocomplete="name" />
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Register for Game Night Manager</h1>
+      <form onSubmit={handleSubmit} className="mb-4">
+        <div className="mb-4">
+          <label className="block text-gray-700">Name:</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            autoComplete="name"
+            className="border p-2 rounded w-full"
+          />
         </div>
-        <div>
-          <label>Email:</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autocomplete="email" />
+        <div className="mb-4">
+          <label className="block text-gray-700">Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+            className="border p-2 rounded w-full"
+          />
         </div>
-        <div>
-          <label>Password:</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autocomplete="new-password" />
+        <div className="mb-4">
+          <label className="block text-gray-700">Password:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="new-password"
+            className="border p-2 rounded w-full"
+          />
         </div>
-        <div>
-          <label>Confirm Password:</label>
-          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autocomplete="new-password" />
+        <div className="mb-4">
+          <label className="block text-gray-700">Confirm Password:</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            autoComplete="new-password"
+            className="border p-2 rounded w-full"
+          />
         </div>
-        <button type="submit">Register</button>
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded">Register</button>
       </form>
     </div>
   );

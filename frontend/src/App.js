@@ -23,7 +23,7 @@ function App() {
 
   return (
     <Router>
-      <div>
+      <div className="font-sans">
         <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         <Switch>
           <Route path="/login">
