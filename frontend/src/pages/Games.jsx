@@ -17,7 +17,7 @@ const Games = () => {
     setCurrentPage(1); // Reset to the first page on new search
 
     try {
-      const response = await axios.get('/api/games/search', {
+      const response = await axios.get('http://192.168.0.133:5000/api/games/search', {
         params: { query: searchTerm }
       });
       const gamesArray = response.data;
@@ -34,7 +34,7 @@ const Games = () => {
   const fetchDetailedGames = async (games) => {
     try {
       const detailedGamesArray = await Promise.all(games.map(async (game) => {
-        const response = await axios.get('/api/games/details', {
+        const response = await axios.get('http://192.168.0.133:5000/api/games/details', {
           params: { id: game.id }
         });
         const gameDetails = response.data;

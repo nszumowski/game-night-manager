@@ -12,8 +12,9 @@ const Profile = () => {
           throw new Error('No token found');
         }
         const response = await axios.get('http://192.168.0.133:5000/api/users/profile', {
+          // const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/users/profile`, {
           headers: {
-            Authorization: `Bearer ${token}` // Include the token in the headers
+            Authorization: `${token}` // Include the token in the headers
           }
         });
         setUser(response.data);
