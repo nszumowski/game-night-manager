@@ -11,7 +11,7 @@ const Login = ({ setIsLoggedIn }) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://192.168.0.132:5000/api/users/login', { email, password });
+      const response = await axios.post('http://192.168.0.133:5000/api/users/login', { email, password });
       if (response.data.success) {
         localStorage.setItem('jwtToken', response.data.token); // Store the token in local storage
         setIsLoggedIn(true); // Update the application state to reflect that the user is logged in

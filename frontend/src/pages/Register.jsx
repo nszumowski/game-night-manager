@@ -17,7 +17,7 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post('http://192.168.0.132:5000/api/users/register', { name, email, password });
+      const response = await axios.post('http://192.168.0.133:5000/api/users/register', { name, email, password });
       if (response.data.success) {
         localStorage.setItem('jwtToken', response.data.token); // Store the token in local storage
         history.push('/profile');

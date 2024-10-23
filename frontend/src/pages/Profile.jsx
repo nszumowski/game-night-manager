@@ -11,7 +11,7 @@ const Profile = () => {
         if (!token) {
           throw new Error('No token found');
         }
-        const response = await axios.get('http://192.168.0.132:5000/api/users/profile', {
+        const response = await axios.get('http://192.168.0.133:5000/api/users/profile', {
           headers: {
             Authorization: `Bearer ${token}` // Include the token in the headers
           }
