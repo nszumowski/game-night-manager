@@ -34,6 +34,6 @@ This license will terminate automatically if you fail to comply with any of its 
 For more information, please contact:
 
 Nicholas Szumowski
-nszumowski@gmail.com
+nick@szumowski.dev
 
 By using this software, you agree to these terms and conditions.
