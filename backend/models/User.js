@@ -19,7 +19,11 @@ const UserSchema = new Schema({
   date: {
     type: Date,
     default: Date.now
-  }
+  },
+  ownedGames: [{
+    type: String,
+    unique: true
+  }]
 });
 
 module.exports = User = mongoose.model('users', UserSchema);

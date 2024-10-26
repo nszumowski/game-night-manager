@@ -41,4 +41,23 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), (req, r
   res.json(req.user);
 });
 
+// Add game to owned games route
+router.post('/add-owned-game', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const { gameTitle } = req.body;
+    const user = await User.findById(req.user.id);
+
+    if (!user.ownedGames.includes(gameTitle)) {
+      user.ownedGames.push(gameTitle);
+      await user.save();
+      res.json({ success: true, ownedGames: user.ownedGames });
+    } else {
+      res.status(400).json({ success: false, message: 'Game already in owned list' });
+    }
+  } catch (error) {
+    console.error('Error adding owned game:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 module.exports = router;

@@ -9,6 +9,7 @@ const Games = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [detailedGames, setDetailedGames] = useState([]);
+  const [addedGames, setAddedGames] = useState({});
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -53,6 +54,25 @@ const Games = () => {
     fetchDetailedGames(games.slice(startIndex, endIndex));
   };
 
+  const addToOwnedGames = async (gameTitle) => {
+    try {
+      const token = localStorage.getItem('jwtToken');
+      const response = await axios.post('http://192.168.0.133:5000/api/users/add-owned-game', 
+        { gameTitle },
+        { headers: { Authorization: token } }
+      );
+      if (response.data.success) {
+        setAddedGames(prev => ({ ...prev, [gameTitle]: true }));
+        setTimeout(() => {
+          setAddedGames(prev => ({ ...prev, [gameTitle]: false }));
+        }, 2000); // Reset after 2 seconds
+      }
+    } catch (error) {
+      console.error('Error adding game to owned list:', error);
+      alert('Failed to add game to owned list. It might already be in your list.');
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Search for Board Games</h1>
@@ -77,6 +97,13 @@ const Games = () => {
               <img src={game.image} alt="Game" className="max-w-xs max-h-xs object-contain rounded border border-gray-200 p-2" />
               <p className="text-gray-700 mx-5">{game.description}</p>
             </div>
+            <button 
+              onClick={() => addToOwnedGames(game.title)} 
+              className={`${addedGames[game.title] ? 'bg-green-700' : 'bg-green-500'} text-white p-2 rounded mt-2`}
+              disabled={addedGames[game.title]}
+            >
+              {addedGames[game.title] ? 'Game Added' : 'Add to Owned Games'}
+            </button>
             <details className="mt-2">
               <summary className="cursor-pointer text-blue-500">Show Raw Data</summary>
               <pre className="bg-gray-100 p-2 rounded">{game.rawData}</pre>

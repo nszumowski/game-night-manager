@@ -3,21 +3,22 @@ import axios from 'axios';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
+  const [ownedGames, setOwnedGames] = useState([]);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem('jwtToken'); // Get the token from local storage
+        const token = localStorage.getItem('jwtToken');
         if (!token) {
           throw new Error('No token found');
         }
         const response = await axios.get('http://192.168.0.133:5000/api/users/profile', {
-          // const response = await axios.get(`${import.meta.env.VITE_APP_API_URL}/api/users/profile`, {
           headers: {
-            Authorization: `${token}` // Include the token in the headers
+            Authorization: token
           }
         });
         setUser(response.data);
+        setOwnedGames(response.data.ownedGames || []);
       } catch (error) {
         console.error('There was an error fetching the user profile!', error);
       }
@@ -36,6 +37,17 @@ const Profile = () => {
       <p className="text-gray-700">Name: {user.name}</p>
       <p className="text-gray-700">Email: {user.email}</p>
       <p className="text-gray-700">Date Registered: {new Date(user.date).toLocaleDateString()}</p>
+      
+      <h2 className="text-xl font-bold mt-6 mb-2">Owned Games</h2>
+      {ownedGames.length > 0 ? (
+        <ul className="list-disc pl-5">
+          {ownedGames.map((game, index) => (
+            <li key={index} className="text-gray-700">{game}</li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-700">You don't own any games yet.</p>
+      )}
     </div>
   );
 };
