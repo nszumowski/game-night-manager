@@ -41,7 +41,7 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), (req, r
   res.json(req.user);
 });
 
-// Add game to owned games route
+// Add game to owned games list route
 router.post('/add-owned-game', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
     const { gameTitle } = req.body;
@@ -56,6 +56,21 @@ router.post('/add-owned-game', passport.authenticate('jwt', { session: false }),
     }
   } catch (error) {
     console.error('Error adding owned game:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Remove game from owned games list route
+router.post('/remove-owned-game', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const { gameTitle } = req.body;
+    const user = await User.findById(req.user.id);
+
+    user.ownedGames = user.ownedGames.filter(game => game !== gameTitle);
+    await user.save();
+    res.json({ success: true, ownedGames: user.ownedGames });
+  } catch (error) {
+    console.error('Error removing owned game:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
