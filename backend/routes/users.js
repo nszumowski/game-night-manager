@@ -44,11 +44,11 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), (req, r
 // Add game to owned games list route
 router.post('/add-owned-game', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    const { gameTitle } = req.body;
+    const { gameTitle, gameId } = req.body;
     const user = await User.findById(req.user.id);
 
-    if (!user.ownedGames.includes(gameTitle)) {
-      user.ownedGames.push(gameTitle);
+    if (!user.ownedGames.some(game => game.id === gameId)) {
+      user.ownedGames.push({ title: gameTitle, id: gameId });
       await user.save();
       res.json({ success: true, ownedGames: user.ownedGames });
     } else {
@@ -63,10 +63,10 @@ router.post('/add-owned-game', passport.authenticate('jwt', { session: false }),
 // Remove game from owned games list route
 router.post('/remove-owned-game', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    const { gameTitle } = req.body;
+    const { gameId } = req.body;
     const user = await User.findById(req.user.id);
 
-    user.ownedGames = user.ownedGames.filter(game => game !== gameTitle);
+    user.ownedGames = user.ownedGames.filter(game => game.id !== gameId);
     await user.save();
     res.json({ success: true, ownedGames: user.ownedGames });
   } catch (error) {

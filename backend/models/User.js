@@ -21,8 +21,8 @@ const UserSchema = new Schema({
     default: Date.now
   },
   ownedGames: [{
-    type: String,
-    unique: true
+    title: String,
+    id: String
   }]
 });
 

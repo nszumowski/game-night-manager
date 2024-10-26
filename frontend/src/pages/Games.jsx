@@ -66,23 +66,24 @@ const Games = () => {
         headers: { Authorization: token }
       });
       setOwnedGames(response.data.ownedGames || []);
+      console.log('Owned games:', response.data.ownedGames);
     } catch (error) {
       console.error('Error fetching owned games:', error);
     }
   };
 
-  const addToOwnedGames = async (gameTitle) => {
+  const addToOwnedGames = async (gameTitle, gameId) => {
     try {
       const token = localStorage.getItem('jwtToken');
       const response = await axios.post('http://192.168.0.133:5000/api/users/add-owned-game', 
-        { gameTitle },
+        { gameTitle, gameId },
         { headers: { Authorization: token } }
       );
       if (response.data.success) {
-        setOwnedGames(prev => [...prev, gameTitle]);
-        setAddedGames(prev => ({ ...prev, [gameTitle]: true }));
+        setOwnedGames(prev => [...prev, { title: gameTitle, id: gameId }]);
+        setAddedGames(prev => ({ ...prev, [gameId]: true }));
         setTimeout(() => {
-          setAddedGames(prev => ({ ...prev, [gameTitle]: false }));
+          setAddedGames(prev => ({ ...prev, [gameId]: false }));
         }, 2000);
       }
     } catch (error) {
@@ -91,15 +92,15 @@ const Games = () => {
     }
   };
 
-  const removeFromOwnedGames = async (gameTitle) => {
+  const removeFromOwnedGames = async (gameId) => {
     try {
       const token = localStorage.getItem('jwtToken');
       const response = await axios.post('http://192.168.0.133:5000/api/users/remove-owned-game', 
-        { gameTitle },
+        { gameId },
         { headers: { Authorization: token } }
       );
       if (response.data.success) {
-        setOwnedGames(prev => prev.filter(game => game !== gameTitle));
+        setOwnedGames(prev => prev.filter(game => game.id !== gameId));
       }
     } catch (error) {
       console.error('Error removing game from owned list:', error);
@@ -132,30 +133,30 @@ const Games = () => {
               <p className="text-gray-700 mx-5">{game.description}</p>
             </div>
             <div className="flex mt-2">
-              {ownedGames.includes(game.title) ? (
-                <>
-                  <button 
-                    className="bg-gray-300 text-gray-600 p-2 rounded mr-2 cursor-not-allowed"
-                    disabled
-                  >
-                    Game Already in List
-                  </button>
-                  <button 
-                    onClick={() => removeFromOwnedGames(game.title)}
-                    className="bg-red-500 text-white p-2 rounded"
-                  >
-                    Remove from Owned Games
-                  </button>
-                </>
-              ) : (
+            {ownedGames.some(ownedGame => ownedGame.id === game.id) ? (
+              <>
                 <button 
-                  onClick={() => addToOwnedGames(game.title)} 
-                  className={`${addedGames[game.title] ? 'bg-green-700' : 'bg-green-500'} text-white p-2 rounded`}
-                  disabled={addedGames[game.title]}
+                  className="bg-gray-300 text-gray-600 p-2 rounded mr-2 cursor-not-allowed"
+                  disabled
                 >
-                  {addedGames[game.title] ? 'Game Added' : 'Add to Owned Games'}
+                  Game Already in List
                 </button>
-              )}
+                <button 
+                  onClick={() => removeFromOwnedGames(game.id)}
+                  className="bg-red-500 text-white p-2 rounded"
+                >
+                  Remove from Owned Games
+                </button>
+              </>
+            ) : (
+              <button 
+                onClick={() => addToOwnedGames(game.title, game.id)} 
+                className={`${addedGames[game.id] ? 'bg-green-700' : 'bg-green-500'} text-white p-2 rounded`}
+                disabled={addedGames[game.id]}
+              >
+                {addedGames[game.id] ? 'Game Added' : 'Add to Owned Games'}
+              </button>
+            )}
             </div>
             <details className="mt-2">
               <summary className="cursor-pointer text-blue-500">Show Raw Data</summary>

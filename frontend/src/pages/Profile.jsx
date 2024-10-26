@@ -42,7 +42,9 @@ const Profile = () => {
       {ownedGames.length > 0 ? (
         <ul className="list-disc pl-5">
           {ownedGames.map((game, index) => (
-            <li key={index} className="text-gray-700">{game}</li>
+            <li key={index} className="text-gray-700">
+              {game.title ? game.title : 'Unknown Title'} (ID: {game.id ? game.id : 'Unknown'})
+            </li>
           ))}
         </ul>
       ) : (
