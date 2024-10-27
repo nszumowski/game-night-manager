@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -11,15 +11,7 @@ const Profile = () => {
 
   const fetchUser = async () => {
     try {
-      const token = localStorage.getItem('jwtToken');
-      if (!token) {
-        throw new Error('No token found');
-      }
-      const response = await axios.get('http://192.168.0.133:5000/api/users/profile', {
-        headers: {
-          Authorization: token
-        }
-      });
+      const response = await api.get('/users/profile');
       setUser(response.data);
       setOwnedGames(response.data.ownedGames || []);
     } catch (error) {
@@ -29,10 +21,7 @@ const Profile = () => {
 
   const removeGame = async (gameId) => {
     try {
-      const response = await axios.post('http://192.168.0.133:5000/api/users/remove-owned-game', 
-        { gameId },
-        { headers: { Authorization: localStorage.getItem('jwtToken') } }
-      );
+      const response = await api.post('/users/remove-owned-game', { gameId });
       if (response.data.success) {
         setOwnedGames(prev => prev.filter(game => game.bggId !== gameId));
       }
@@ -77,7 +66,7 @@ const Profile = () => {
               </div>
               <button
                 className="text-red-500 hover:bg-red-500 hover:text-white px-2 py-1 rounded transition-colors duration-200 group"
-                onClick={() => removeGame(game.id)}
+                onClick={() => removeGame(game.bggId)}
               >
                 <span className="group-hover:hidden">×</span>
                 <span className="hidden group-hover:inline">Remove Game ×</span>
