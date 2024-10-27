@@ -40,9 +40,9 @@ const Profile = () => {
       <h1 className="text-2xl font-bold mb-4">Profile</h1>
       <p className="text-gray-700">Name: {user.name}</p>
       <p className="text-gray-700">Email: {user.email}</p>
-      <p className="text-gray-700">Date Registered: {new Date(user.date).toLocaleDateString()}</p>
+      <p className="text-gray-700">Member since: {new Date(user.date).toLocaleDateString()}</p>
       
-      <h2 className="text-xl font-bold mt-6 mb-2">Owned Games</h2>
+      <h2 className="text-xl font-bold mt-6 mb-2">My Games ({ownedGames.length})</h2>
       {ownedGames.length > 0 ? (
         <ul className="list-none pl-0">
           {ownedGames.map((game) => (
