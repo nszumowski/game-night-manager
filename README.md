@@ -141,3 +141,13 @@ game-night-manager/
 ## License
 
 This project is licensed under a Proprietary License Agreement - see the LICENSE.txt file for details.
+
+## TODO
+
+- [ ] Get user game list
+- [ ] Implement friend management system
+- [ ] Create game night creation and management features
+- [ ] Integrate real-time chat for game nights
+- [ ] Implement voting system for game selection
+- [ ] Fix routing 404 direct page issues
+- [ ] Develop mobile app versions (iOS/Android)
