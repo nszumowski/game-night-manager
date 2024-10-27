@@ -63,11 +63,11 @@ const Profile = () => {
                 {game.title ? game.title : 'Unknown Title'} (ID: {game.id ? game.id : 'Unknown'})
               </span>
               <button
-                className="text-red-500 hover:bg-red-500 hover:text-white px-2 py-1 rounded transition-colors duration-200"
+                className="text-red-500 hover:bg-red-500 hover:text-white px-2 py-1 rounded transition-colors duration-200 group"
                 onClick={() => removeGame(game.id)}
               >
-                <span className="mr-1">×</span>
-                <span className="hidden group-hover:inline">Remove Game</span>
+                <span className="group-hover:hidden">×</span>
+                <span className="hidden group-hover:inline">Remove Game ×</span>
               </button>
             </li>
           ))}
