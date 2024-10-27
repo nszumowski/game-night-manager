@@ -11,6 +11,8 @@ const Games = () => {
   const [detailedGames, setDetailedGames] = useState([]);
   const [addedGames, setAddedGames] = useState({});
   const [ownedGames, setOwnedGames] = useState([]);
+  const [bggUsername, setBggUsername] = useState('');
+  const [importLoading, setImportLoading] = useState(false);
 
   useEffect(() => {
     fetchOwnedGames();
@@ -98,6 +100,30 @@ const Games = () => {
     }
   };
 
+  const handleImportCollection = async (e) => {
+    e.preventDefault();
+    setImportLoading(true);
+    setError(null);
+
+    try {
+      const response = await api.get('/games/collection', {
+        params: { username: bggUsername }
+      });
+      
+      // Add each game to the owned games list
+      for (const game of response.data) {
+        await addToOwnedGames(game.title, game.id);
+      }
+      
+      alert('Collection imported successfully!');
+    } catch (err) {
+      setError('There was an error importing your collection.');
+    } finally {
+      setImportLoading(false);
+      setBggUsername('');
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Search for Board Games</h1>
@@ -160,6 +186,27 @@ const Games = () => {
         totalPages={totalPages}
         onPageChange={handlePageChange}
       />
+      <div className="mb-8 mt-4 p-4 border rounded-lg bg-gray-50">
+        <h2 className="text-xl font-semibold mb-4">Import BGG Collection</h2>
+        <form onSubmit={handleImportCollection} className="flex gap-4">
+          <input
+            type="text"
+            value={bggUsername}
+            onChange={(e) => setBggUsername(e.target.value)}
+            placeholder="Enter BGG Username"
+            required
+            className="border p-2 rounded flex-grow"
+          />
+          <button 
+            type="submit" 
+            className="bg-green-500 text-white p-2 rounded min-w-[200px]"
+            disabled={importLoading}
+          >
+            {importLoading ? 'Importing...' : 'Import BGG Collection'}
+          </button>
+        </form>
+        {error && <p className="text-red-500 mt-2">{error}</p>}
+      </div>
     </div>
   );
 };

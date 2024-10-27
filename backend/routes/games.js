@@ -71,6 +71,39 @@ router.get('/details', async (req, res) => {
   }
 });
 
+// Add after the existing routes
+router.get('/collection', async (req, res) => {
+  const { username } = req.query;
+  const cacheKey = `collection_${username}`;
+
+  if (cache.has(cacheKey)) {
+    return res.json(cache.get(cacheKey));
+  }
+
+  try {
+    const response = await axios.get(`https://www.boardgamegeek.com/xmlapi2/collection?username=${username}&own=1`);
+    const result = await parseXML(response.data);
+
+    if (!result.items || !result.items.item) {
+      return res.status(404).json({ error: 'No collection found for this username' });
+    }
+
+    const items = Array.isArray(result.items.item) ? result.items.item : [result.items.item];
+    const gamesArray = items.map(item => ({
+      id: item.$.objectid,
+      title: item.name[0]._,
+      yearPublished: item.yearpublished && item.yearpublished[0],
+      image: item.thumbnail && item.thumbnail[0]
+    }));
+
+    cache.set(cacheKey, gamesArray);
+    res.json(gamesArray);
+  } catch (err) {
+    console.error('Error fetching collection:', err);
+    res.status(500).json({ error: 'There was an error fetching the collection.' });
+  }
+});
+
 module.exports = router;
 
 /*
