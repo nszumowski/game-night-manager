@@ -21,8 +21,8 @@ const UserSchema = new Schema({
     default: Date.now
   },
   ownedGames: [{
-    title: String,
-    id: String
+    type: Schema.Types.ObjectId,
+    ref: 'games'
   }]
 });
 

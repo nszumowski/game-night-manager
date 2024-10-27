@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const Games = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,10 +20,10 @@ const Games = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setCurrentPage(1); // Reset to the first page on new search
+    setCurrentPage(1);
 
     try {
-      const response = await axios.get('http://192.168.0.133:5000/api/games/search', {
+      const response = await api.get('/games/search', {
         params: { query: searchTerm }
       });
       const gamesArray = response.data;
@@ -40,15 +40,15 @@ const Games = () => {
   const fetchDetailedGames = async (games) => {
     try {
       const detailedGamesArray = await Promise.all(games.map(async (game) => {
-        const response = await axios.get('http://192.168.0.133:5000/api/games/details', {
+        const response = await api.get('/games/details', {
           params: { id: game.id }
         });
         const gameDetails = response.data;
         return { ...game, ...gameDetails };
       }));
       setDetailedGames(detailedGamesArray);
-    } catch (err) {
-      setError('There was an error fetching the game details.');
+    } catch (error) {
+      console.error('Error fetching game details:', error);
     }
   };
 
@@ -61,12 +61,10 @@ const Games = () => {
 
   const fetchOwnedGames = async () => {
     try {
-      const token = localStorage.getItem('jwtToken');
-      const response = await axios.get('http://192.168.0.133:5000/api/users/profile', {
-        headers: { Authorization: token }
-      });
+      const response = await api.get('/users/profile');
+      // Make sure we're getting the populated game objects
+      console.log('Fetched owned games:', response.data.ownedGames);
       setOwnedGames(response.data.ownedGames || []);
-      console.log('Owned games:', response.data.ownedGames);
     } catch (error) {
       console.error('Error fetching owned games:', error);
     }
@@ -74,13 +72,9 @@ const Games = () => {
 
   const addToOwnedGames = async (gameTitle, gameId) => {
     try {
-      const token = localStorage.getItem('jwtToken');
-      const response = await axios.post('http://192.168.0.133:5000/api/users/add-owned-game', 
-        { gameTitle, gameId },
-        { headers: { Authorization: token } }
-      );
+      const response = await api.post('/users/add-owned-game', { gameTitle, gameId });
       if (response.data.success) {
-        setOwnedGames(prev => [...prev, { title: gameTitle, id: gameId }]);
+        setOwnedGames(prev => [...prev, { title: gameTitle, bggId: gameId }]);
         setAddedGames(prev => ({ ...prev, [gameId]: true }));
         setTimeout(() => {
           setAddedGames(prev => ({ ...prev, [gameId]: false }));
@@ -94,13 +88,9 @@ const Games = () => {
 
   const removeFromOwnedGames = async (gameId) => {
     try {
-      const token = localStorage.getItem('jwtToken');
-      const response = await axios.post('http://192.168.0.133:5000/api/users/remove-owned-game', 
-        { gameId },
-        { headers: { Authorization: token } }
-      );
+      const response = await api.post('/users/remove-owned-game', { gameId });
       if (response.data.success) {
-        setOwnedGames(prev => prev.filter(game => game.id !== gameId));
+        setOwnedGames(prev => prev.filter(game => game.bggId !== gameId));
       }
     } catch (error) {
       console.error('Error removing game from owned list:', error);
@@ -133,7 +123,7 @@ const Games = () => {
               <p className="text-gray-700 mx-5">{game.description}</p>
             </div>
             <div className="flex mt-2">
-            {ownedGames.some(ownedGame => ownedGame.id === game.id) ? (
+            {ownedGames.some(ownedGame => ownedGame.bggId === game.id) ? (
               <>
                 <button 
                   className="bg-gray-300 text-gray-600 p-2 rounded mr-2 cursor-not-allowed"

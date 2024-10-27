@@ -19,6 +19,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Register models
 require('./models/User');
+require('./models/Game');
 
 const app = express();
 

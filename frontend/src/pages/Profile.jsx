@@ -29,13 +29,12 @@ const Profile = () => {
 
   const removeGame = async (gameId) => {
     try {
-      const token = localStorage.getItem('jwtToken');
       const response = await axios.post('http://192.168.0.133:5000/api/users/remove-owned-game', 
         { gameId },
-        { headers: { Authorization: token } }
+        { headers: { Authorization: localStorage.getItem('jwtToken') } }
       );
       if (response.data.success) {
-        setOwnedGames(prev => prev.filter(game => game.id !== gameId));
+        setOwnedGames(prev => prev.filter(game => game.bggId !== gameId));
       }
     } catch (error) {
       console.error('Error removing game from owned list:', error);
@@ -58,10 +57,24 @@ const Profile = () => {
       {ownedGames.length > 0 ? (
         <ul className="list-none pl-0">
           {ownedGames.map((game) => (
-            <li key={game.id} className="flex items-center justify-between border-b py-2">
-              <span className="text-gray-700">
-                {game.title ? game.title : 'Unknown Title'} (ID: {game.id ? game.id : 'Unknown'})
-              </span>
+            <li key={game._id} className="flex items-center justify-between border-b py-2">
+              <div className="flex items-center">
+                {game.image && (
+                  <img 
+                    src={game.image} 
+                    alt={game.title} 
+                    className="w-16 h-16 object-contain mr-4"
+                  />
+                )}
+                <div>
+                  <span className="text-gray-700 font-medium">
+                    {game.title}
+                  </span>
+                  {game.year && (
+                    <span className="text-gray-500 ml-2">({game.year})</span>
+                  )}
+                </div>
+              </div>
               <button
                 className="text-red-500 hover:bg-red-500 hover:text-white px-2 py-1 rounded transition-colors duration-200 group"
                 onClick={() => removeGame(game.id)}

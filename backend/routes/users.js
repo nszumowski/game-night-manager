@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys = require('../config/keys');
 const User = require('../models/User');
+const Game = require('../models/Game');
 const passport = require('passport');
 
 const router = express.Router();
@@ -37,8 +38,14 @@ router.post('/register', async (req, res) => {
 });
 
 // Profile route
-router.get('/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
-  res.json(req.user);
+router.get('/profile', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate('ownedGames');
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
 });
 
 // Add game to owned games list route
@@ -47,8 +54,17 @@ router.post('/add-owned-game', passport.authenticate('jwt', { session: false }),
     const { gameTitle, gameId } = req.body;
     const user = await User.findById(req.user.id);
 
-    if (!user.ownedGames.some(game => game.id === gameId)) {
-      user.ownedGames.push({ title: gameTitle, id: gameId });
+    let game = await Game.findOne({ bggId: gameId });
+    if (!game) {
+      game = new Game({
+        title: gameTitle,
+        bggId: gameId
+      });
+      await game.save();
+    }
+
+    if (!user.ownedGames.includes(game._id)) {
+      user.ownedGames.push(game._id);
       await user.save();
       res.json({ success: true, ownedGames: user.ownedGames });
     } else {
@@ -65,10 +81,15 @@ router.post('/remove-owned-game', passport.authenticate('jwt', { session: false 
   try {
     const { gameId } = req.body;
     const user = await User.findById(req.user.id);
+    const game = await Game.findOne({ bggId: gameId });
 
-    user.ownedGames = user.ownedGames.filter(game => game.id !== gameId);
-    await user.save();
-    res.json({ success: true, ownedGames: user.ownedGames });
+    if (game) {
+      user.ownedGames = user.ownedGames.filter(ownedGameId => !ownedGameId.equals(game._id));
+      await user.save();
+      res.json({ success: true, ownedGames: user.ownedGames });
+    } else {
+      res.status(404).json({ success: false, message: 'Game not found' });
+    }
   } catch (error) {
     console.error('Error removing owned game:', error);
     res.status(500).json({ success: false, message: 'Server error' });
