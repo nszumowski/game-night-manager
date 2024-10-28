@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import api from '../utils/api';
 
 const Login = ({ setIsLoggedIn }) => {
   const [email, setEmail] = useState('');
@@ -11,8 +11,7 @@ const Login = ({ setIsLoggedIn }) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://192.168.0.133:5000/api/users/login', { email, password });
-      // const response = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/users/login`, { email, password });
+      const response = await api.post('/users/login', { email, password });
       if (response.data.success) {
         localStorage.setItem('jwtToken', response.data.token); // Store the token in local storage
         setIsLoggedIn(true); // Update the application state to reflect that the user is logged in

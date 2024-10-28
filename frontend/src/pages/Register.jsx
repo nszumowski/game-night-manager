@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import api from '../utils/api';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -17,7 +17,8 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post('http://192.168.0.133:5000/api/users/register', { name, email, password });
+
+      const response = await api.post('/users/register', { name, email, password });
       // const response = await axios.post(`${import.meta.env.VITE_APP_API_URL}/api/users/register`, { name, email, password });
       if (response.data.success) {
         localStorage.setItem('jwtToken', response.data.token); // Store the token in local storage
