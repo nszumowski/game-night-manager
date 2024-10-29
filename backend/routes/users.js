@@ -7,14 +7,24 @@ const keys = require('../config/keys');
 const User = require('../models/User');
 const Game = require('../models/Game');
 const passport = require('passport');
+const xss = require('xss');
 
 const router = express.Router();
 
 // Register route
 router.post('/register', async (req, res) => {
-  const { name, email, password } = req.body;
+  let { name, email, password } = req.body;
 
   try {
+    // Sanitize and validate name
+    name = xss(name.trim());
+    if (name.length < 1 || name.length > 50) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name must be between 1 and 50 characters'
+      });
+    }
+
     let user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({ email: 'Email already exists' });
@@ -33,7 +43,7 @@ router.post('/register', async (req, res) => {
     res.json({ success: true, token: 'Bearer ' + token });
   } catch (error) {
     console.error('There was an error registering the user!', error);
-    res.status(500).send('Server error');
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
@@ -68,6 +78,37 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), async (
     res.json(user);
   } catch (error) {
     console.error('Error fetching user profile:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Update profile route
+router.put('/update-profile', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    let { name } = req.body;
+
+    // Sanitize the name input
+    name = xss(name.trim());
+
+    // Validate name length after sanitization
+    if (name.length < 1 || name.length > 50) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name must be between 1 and 50 characters'
+      });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    user.name = name;
+    await user.save();
+
+    res.json({ success: true, user });
+  } catch (error) {
+    console.error('Error updating user profile:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
