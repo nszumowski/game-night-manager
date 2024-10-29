@@ -90,7 +90,7 @@ Game Night Manager is a modern app that can be used in the web browser (and even
 1. Write unit and integration tests.
 2. Use Docker to containerize your application for easier deployment.
 
-## Example Project Structure
+## Project Structure
 
 ```
 game-night-manager/
@@ -150,7 +150,8 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 
 - [x] Get user game list
 - [ ] Get refresh token working
-- [ ] Usernames
+- [x] Name update
+- [ ] Email update with confirmation
 - [ ] Implement friend management system
 - [ ] Create game night creation and management features
 - [ ] Integrate real-time chat for game nights
