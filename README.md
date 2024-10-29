@@ -103,10 +103,12 @@ game-night-manager/
 │   ├── controllers/
 │   ├── Dockerfile
 │   ├── models/
-│   │   └── User.js
+│   │   ├── User.js
+│   │   └── Game.js
 │   ├── package.json
 │   ├── routes/
-│   │   └── users.js
+│   │   ├── users.js
+│   │   └── games.js
 │   └── server.js
 ├── docker-compose.yml
 ├── frontend/
@@ -129,8 +131,10 @@ game-night-manager/
 │       ├── index.js
 │       └── pages/
 │           ├── GameNight.js
+│           ├── Games.js
 │           ├── Home.js
 │           ├── Login.js
+│           ├── Logout.js
 │           ├── Profile.js
 │           └── Register.js
 ├── LICENSE.txt
@@ -144,10 +148,15 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 
 ## TODO
 
-- [ ] Get user game list
+- [x] Get user game list
+- [ ] Get refresh token working
+- [ ] Usernames
 - [ ] Implement friend management system
 - [ ] Create game night creation and management features
 - [ ] Integrate real-time chat for game nights
 - [ ] Implement voting system for game selection
 - [ ] Fix routing 404 direct page issues
 - [ ] Develop mobile app versions (iOS/Android)
+- [ ] Forgot Password functionality
+- [ ] oAuth?
+- [ ] Add unit and integration tests
