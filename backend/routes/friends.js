@@ -76,6 +76,28 @@ router.post('/request/:requestId', passport.authenticate('jwt', { session: false
   }
 });
 
+// Remove friend
+router.post('/remove', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const { friendId } = req.body;
+    const user = await User.findById(req.user.id);
+    const friend = await User.findById(friendId);
+
+    if (!friend) {
+      return res.status(404).json({ message: 'Friend not found' });
+    }
+
+    // Remove friend from both users' friend lists
+    user.friends = user.friends.filter(id => !id.equals(friendId));
+    friend.friends = friend.friends.filter(id => !id.equals(user._id));
+
+    await Promise.all([user.save(), friend.save()]);
+    res.json({ success: true, friends: user.friends });
+  } catch (error) {
+    res.status(500).json({ message: 'Error removing friend' });
+  }
+});
+
 // Get friend list
 router.get('/list', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {

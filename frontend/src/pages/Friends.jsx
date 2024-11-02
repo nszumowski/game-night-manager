@@ -51,6 +51,15 @@ const Friends = () => {
     }
   };
 
+  const removeFriend = async (friendId) => {
+    try {
+      await api.post('/friends/remove', { friendId });
+      setFriends(friends.filter(friend => friend._id !== friendId));
+    } catch (error) {
+      setError('Error removing friend');
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Friends</h1>
@@ -129,11 +138,17 @@ const Friends = () => {
         {friends.length > 0 ? (
           <ul className="border rounded divide-y">
             {friends.map(friend => (
-              <li key={friend._id} className="p-3">
+              <li key={friend._id} className="p-3 flex justify-between items-center">
                 <Link to={`/profile/${friend._id}`} className="hover:text-blue-500">
                   <p className="font-medium">{friend.name}</p>
                   <p className="text-gray-600">{friend.email}</p>
                 </Link>
+                <button
+                  onClick={() => removeFriend(friend._id)}
+                  className="text-red-500 hover:bg-red-500 hover:text-white px-3 py-1 rounded transition-colors duration-200"
+                >
+                  Remove
+                </button>
               </li>
             ))}
           </ul>
@@ -141,6 +156,7 @@ const Friends = () => {
           <p className="text-gray-600">No friends added yet</p>
         )}
       </div>
+      
     </div>
   );
 };
