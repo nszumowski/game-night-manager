@@ -10,6 +10,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
         {!isLoggedIn && <li><Link to="/register" className="text-white">Register</Link></li>}
         {isLoggedIn && <li><Link to="/games" className="text-white">Games</Link></li>}
         {isLoggedIn && <li><Link to="/profile" className="text-white">Profile</Link></li>}
+        {isLoggedIn && <li><Link to="/friends" className="text-white">Friends</Link></li>}
         {isLoggedIn && <li><Link to="/logout" className="text-white">Logout</Link></li>}
       </ul>
     </nav>

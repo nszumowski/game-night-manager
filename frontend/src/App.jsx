@@ -8,6 +8,7 @@ import GameNight from './pages/GameNight';
 import Profile from './pages/Profile';
 import Logout from './pages/Logout';
 import Games from './pages/Games';
+import Friends from './pages/Friends';
 import Navbar from './components/Navbar';
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
           <Route path="/register" component={Register} />
           <Route path="/game-night/:id" component={GameNight} />
           <Route path="/games" component={Games} />
+          <Route path="/friends" component={Friends} />
           <Route path="/profile" component={Profile} />
           <Route path="/logout">
             <Logout setIsLoggedIn={setIsLoggedIn} />

@@ -23,6 +23,25 @@ const UserSchema = new Schema({
   ownedGames: [{
     type: Schema.Types.ObjectId,
     ref: 'games'
+  }],
+  friends: [{
+    type: Schema.Types.ObjectId,
+    ref: 'users'
+  }],
+  friendRequests: [{
+    from: {
+      type: Schema.Types.ObjectId,
+      ref: 'users'
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'accepted', 'rejected'],
+      default: 'pending'
+    },
+    date: {
+      type: Date,
+      default: Date.now
+    }
   }]
 });
 
