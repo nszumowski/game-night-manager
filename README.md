@@ -148,16 +148,18 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 
 ## TODO
 
+- [ ] **Get refresh token working**
+- [ ] **Fix routing 404 direct page issues**
 - [x] Get user game list
-- [ ] Get refresh token working
 - [x] Name update
-- [ ] Email update with confirmation
-- [ ] Implement friend management system
+- [ ] Move games list from Profile to Games page
+- [ ] Implement friend management system (Add/Remove, Accept/Decline)
+- [ ] Show error when wrong password or email is entered
+- [ ] Forgot Password functionality
+- [ ] Emails for friend requests and game night invitations
 - [ ] Create game night creation and management features
 - [ ] Integrate real-time chat for game nights
 - [ ] Implement voting system for game selection
-- [ ] Fix routing 404 direct page issues
-- [ ] Develop mobile app versions (iOS/Android)
-- [ ] Forgot Password functionality
 - [ ] oAuth?
+- [ ] Develop mobile app versions (iOS/Android)
 - [ ] Add unit and integration tests
