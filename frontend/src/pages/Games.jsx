@@ -13,7 +13,7 @@ const Games = () => {
   const [ownedGames, setOwnedGames] = useState([]);
   const [bggUsername, setBggUsername] = useState('');
   const [importLoading, setImportLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('owned'); // Add this line
+  const [activeTab, setActiveTab] = useState('owned');
 
   useEffect(() => {
     fetchOwnedGames();
@@ -128,7 +128,7 @@ const Games = () => {
   const MyGames = ({ ownedGames, removeFromOwnedGames }) => {
     return (
       <div className="mb-8">
-        <h2 className="text-xl font-bold mb-2">My Games ({ownedGames.length})</h2>
+        <h2 className="text-2xl font-bold mb-4">My Games ({ownedGames.length})</h2>
         {ownedGames.length > 0 ? (
           <ul className="list-none pl-0">
             {ownedGames.map((game) => (
@@ -169,8 +169,8 @@ const Games = () => {
 
   const tabs = [
     { id: 'owned', label: 'My Games' },
-    { id: 'search', label: 'Search' },
-    { id: 'import', label: 'Import' }
+    { id: 'search', label: 'Search for Games' },
+    { id: 'import', label: 'Import Games' }
   ];
 
   return (
@@ -204,7 +204,7 @@ const Games = () => {
 
       {activeTab === 'search' && (
         <div>
-          <h2 className="text-2xl font-bold mb-4">Search for Board Games</h2>
+          <h2 className="text-2xl font-bold mb-4">Search for Games</h2>
           <form onSubmit={handleSearch} className="mb-4">
             <input
               type="text"
@@ -212,7 +212,7 @@ const Games = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Enter game name"
               required
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded mr-2"
             />
             <button type="submit" className="bg-blue-500 text-white p-2 rounded mt-2">Search</button>
           </form>
@@ -277,14 +277,14 @@ const Games = () => {
               onChange={(e) => setBggUsername(e.target.value)}
               placeholder="Enter BGG Username"
               required
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded mr-2"
             />
             <button 
               type="submit" 
               className="bg-blue-500 text-white p-2 rounded mt-2"
               disabled={importLoading}
             >
-              {importLoading ? 'Importing...' : 'Import BGG Collection'}
+              {importLoading ? 'Importing...' : 'Import'}
             </button>
           </form>
           {error && <p className="text-red-500 mt-2">{error}</p>}
