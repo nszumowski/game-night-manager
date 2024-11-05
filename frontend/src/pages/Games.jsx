@@ -13,6 +13,7 @@ const Games = () => {
   const [ownedGames, setOwnedGames] = useState([]);
   const [bggUsername, setBggUsername] = useState('');
   const [importLoading, setImportLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('owned'); // Add this line
 
   useEffect(() => {
     fetchOwnedGames();
@@ -166,96 +167,129 @@ const Games = () => {
     );
   };
 
+  const tabs = [
+    { id: 'owned', label: 'My Games' },
+    { id: 'search', label: 'Search' },
+    { id: 'import', label: 'Import' }
+  ];
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Games</h1>
       
-      <MyGames 
-        ownedGames={ownedGames} 
-        removeFromOwnedGames={removeFromOwnedGames} 
-      />
-
-      <h2 className="text-2xl font-bold mb-4">Search for Board Games</h2>
-      <form onSubmit={handleSearch} className="mb-4">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Enter game name"
-          required
-          className="border p-2 rounded w-full"
-        />
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded mt-2">Search</button>
-      </form>
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
-      <div className="flex flex-col gap-5">
-        {detailedGames.map(game => (
-          <div key={game.id} className="flex flex-col border border-gray-300 p-5 rounded shadow">
-            <h2 className="text-xl font-bold mb-5">{game.title} ({game.year})</h2>
-            <div className="flex">
-              <img src={game.image} alt="Game" className="max-w-xs max-h-xs object-contain rounded border border-gray-200 p-2" />
-              <p className="text-gray-700 mx-5">{game.description}</p>
-            </div>
-            <div className="flex mt-2">
-            {ownedGames.some(ownedGame => ownedGame.bggId === game.id) ? (
-              <>
-                <button 
-                  className="bg-gray-300 text-gray-600 p-2 rounded mr-2 cursor-not-allowed"
-                  disabled
-                >
-                  Game Already in List
-                </button>
-                <button 
-                  onClick={() => removeFromOwnedGames(game.id)}
-                  className="bg-red-500 text-white p-2 rounded"
-                >
-                  Remove from Owned Games
-                </button>
-              </>
-            ) : (
-              <button 
-                onClick={() => addToOwnedGames(game.title, game.id)} 
-                className={`${addedGames[game.id] ? 'bg-green-700' : 'bg-green-500'} text-white p-2 rounded`}
-                disabled={addedGames[game.id]}
-              >
-                {addedGames[game.id] ? 'Game Added' : 'Add to Owned Games'}
-              </button>
-            )}
-            </div>
-            <details className="mt-2">
-              <summary className="cursor-pointer text-blue-500">Show Raw Data</summary>
-              <pre className="bg-gray-100 p-2 rounded">{game.rawData}</pre>
-            </details>
-          </div>
+      {/* Tab Navigation */}
+      <div className="flex border-b mb-4">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            className={`py-2 px-4 mr-2 ${
+              activeTab === tab.id
+                ? 'border-b-2 border-blue-500 text-blue-500 font-semibold'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            {tab.label}
+          </button>
         ))}
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
-      <div className="mb-8 mt-4 p-4 border rounded-lg bg-gray-50">
-        <h2 className="text-xl font-semibold mb-4">Import BGG Collection</h2>
-        <form onSubmit={handleImportCollection} className="flex gap-4">
-          <input
-            type="text"
-            value={bggUsername}
-            onChange={(e) => setBggUsername(e.target.value)}
-            placeholder="Enter BGG Username"
-            required
-            className="border p-2 rounded flex-grow"
+
+      {/* Tab Panels */}
+      {activeTab === 'owned' && (
+        <MyGames 
+          ownedGames={ownedGames} 
+          removeFromOwnedGames={removeFromOwnedGames} 
+        />
+      )}
+
+      {activeTab === 'search' && (
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Search for Board Games</h2>
+          <form onSubmit={handleSearch} className="mb-4">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Enter game name"
+              required
+              className="border p-2 rounded w-full"
+            />
+            <button type="submit" className="bg-blue-500 text-white p-2 rounded mt-2">Search</button>
+          </form>
+          {loading && <p>Loading...</p>}
+          {error && <p>{error}</p>}
+          <div className="flex flex-col gap-5">
+            {detailedGames.map(game => (
+              <div key={game.id} className="flex flex-col border border-gray-300 p-5 rounded shadow">
+                <h2 className="text-xl font-bold mb-5">{game.title} ({game.year})</h2>
+                <div className="flex">
+                  <img src={game.image} alt="Game" className="max-w-xs max-h-xs object-contain rounded border border-gray-200 p-2" />
+                  <p className="text-gray-700 mx-5">{game.description}</p>
+                </div>
+                <div className="flex mt-2">
+                {ownedGames.some(ownedGame => ownedGame.bggId === game.id) ? (
+                  <>
+                    <button 
+                      className="bg-gray-300 text-gray-600 p-2 rounded mr-2 cursor-not-allowed"
+                      disabled
+                    >
+                      Game Already in List
+                    </button>
+                    <button 
+                      onClick={() => removeFromOwnedGames(game.id)}
+                      className="bg-red-500 text-white p-2 rounded"
+                    >
+                      Remove from Owned Games
+                    </button>
+                  </>
+                ) : (
+                  <button 
+                    onClick={() => addToOwnedGames(game.title, game.id)} 
+                    className={`${addedGames[game.id] ? 'bg-green-700' : 'bg-green-500'} text-white p-2 rounded`}
+                    disabled={addedGames[game.id]}
+                  >
+                    {addedGames[game.id] ? 'Game Added' : 'Add to Owned Games'}
+                  </button>
+                )}
+                </div>
+                <details className="mt-2">
+                  <summary className="cursor-pointer text-blue-500">Show Raw Data</summary>
+                  <pre className="bg-gray-100 p-2 rounded">{game.rawData}</pre>
+                </details>
+              </div>
+            ))}
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
           />
-          <button 
-            type="submit" 
-            className="bg-green-500 text-white p-2 rounded min-w-[200px]"
-            disabled={importLoading}
-          >
-            {importLoading ? 'Importing...' : 'Import BGG Collection'}
-          </button>
-        </form>
-        {error && <p className="text-red-500 mt-2">{error}</p>}
-      </div>
+        </div>
+      )}
+
+      {activeTab === 'import' && (
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Import BGG Collection</h2>
+          <form onSubmit={handleImportCollection} className="mb-4">
+            <input
+              type="text"
+              value={bggUsername}
+              onChange={(e) => setBggUsername(e.target.value)}
+              placeholder="Enter BGG Username"
+              required
+              className="border p-2 rounded w-full"
+            />
+            <button 
+              type="submit" 
+              className="bg-blue-500 text-white p-2 rounded mt-2"
+              disabled={importLoading}
+            >
+              {importLoading ? 'Importing...' : 'Import BGG Collection'}
+            </button>
+          </form>
+          {error && <p className="text-red-500 mt-2">{error}</p>}
+        </div>
+      )}
     </div>
   );
 };
