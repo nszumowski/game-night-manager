@@ -5,10 +5,12 @@ import api from '../utils/api';
 const Login = ({ setIsLoggedIn }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const history = useHistory();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear any existing errors
 
     try {
       const response = await api.post('/users/login', { email, password });
@@ -19,12 +21,18 @@ const Login = ({ setIsLoggedIn }) => {
       }
     } catch (error) {
       console.error('There was an error logging in the user!', error);
+      setError('Invalid email or password. Please try again.');
     }
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Login to Game Night Manager</h1>
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+          {error}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="mb-4">
         <div className="mb-4">
           <label className="block text-gray-700">Email:</label>
