@@ -4,6 +4,14 @@ FROM node:16 AS build
 # Set the working directory inside the container
 WORKDIR /usr/src/app
 
+# Add build arguments
+ARG APP_API_URL
+ARG APP_ENV
+
+# Set the environment variables
+ENV APP_API_URL=${APP_API_URL}
+ENV APP_ENV=${APP_ENV}
+
 # Copy package.json and package-lock.json from the frontend directory on the host
 COPY package*.json ./
 
