@@ -62,4 +62,14 @@ api.interceptors.response.use(
   }
 );
 
+// Verify token
+export const verifyToken = async () => {
+  try {
+    await api.get('/users/verify-token');
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
 export default api;

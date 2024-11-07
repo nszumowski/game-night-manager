@@ -207,4 +207,9 @@ router.post('/refresh-token', async (req, res) => {
   }
 });
 
+// Verify token route
+router.get('/verify-token', passport.authenticate('jwt', { session: false }), (req, res) => {
+  res.json({ valid: true });
+});
+
 module.exports = router;
