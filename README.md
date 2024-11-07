@@ -15,7 +15,7 @@ Game Night Manager is a modern app that can be used in the web browser (and even
 - The games are initially pulled from an external API from BoardGameGeek using their BGG_XML_API2
 - The users invited to the game night group will vote on which board game to play for game night from their collected library of owned games
 - A game night group will have a chat, comment, or message board feature specific to planning that game night
-- Users can search and sort games by the number of players and playtime (number of plays and playtime will come with game XML from the BoardGameGeek API)
+- Users can search and sort games by the number of players and playtime (number of players and playtime will come with game XML from the BoardGameGeek API)
 
 ## Frontend
 
@@ -148,18 +148,24 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 
 ## TODO
 
-- [ ] **Get refresh token working**
 - [ ] **Fix routing 404 direct page issues**
-- [x] Get user game list
-- [x] Name update
-- [ ] Move games list from Profile to Games page
-- [ ] Implement friend management system (Add/Remove, Accept/Decline)
-- [ ] Show error when wrong password or email is entered
-- [ ] Forgot Password functionality
+- [ ] Fix - Menu update when logged in/out
+- [ ] Fix - 500 error if game is not found in search
+- [ ] Profile - Email update
+- [ ] Profile - Update/Forgot Password functionality
 - [ ] Emails for friend requests and game night invitations
-- [ ] Create game night creation and management features
-- [ ] Integrate real-time chat for game nights
-- [ ] Implement voting system for game selection
+- [ ] Games - Pull number of players and playtime from BGG API
+- [ ] Games - Trim amount of text on game cards in search results
+- [ ] Games - Add link to BGG page
+- [ ] Game Night - Add game night creation and management features
+- [ ] Game Night - Integrate messaging system or real-time chat for game nights
+- [ ] Game Night - Implement voting system for game selection - random, ranked, weighted? This is optional, the game manager can pick the game(s) or make a poll
 - [ ] oAuth?
 - [ ] Develop mobile app versions (iOS/Android)
 - [ ] Add unit and integration tests
+- [x] Get user game list
+- [x] Name update
+- [x] Move games list from Profile to Games page
+- [x] Implement friend management system (Add/Remove, Accept/Decline)
+- [x] Show error when wrong password or email is entered
+- [x] **Get refresh token working**
