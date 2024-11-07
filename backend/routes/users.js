@@ -38,7 +38,7 @@ router.post('/register', async (req, res) => {
     await user.save();
 
     const payload = { id: user.id, name: user.name, email: user.email };
-    const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 3600 });
+    const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 60 });
 
     res.json({ success: true, token: 'Bearer ' + token });
   } catch (error) {
@@ -60,7 +60,7 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       const payload = { id: user.id, name: user.name, email: user.email };
-      const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 3600 });
+      const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 60 });
       res.json({ success: true, token: 'Bearer ' + token });
     } else {
       return res.status(400).json({ password: 'Password incorrect' });
@@ -158,6 +158,52 @@ router.post('/remove-owned-game', passport.authenticate('jwt', { session: false 
   } catch (error) {
     console.error('Error removing owned game:', error);
     res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Refresh token route
+router.post('/refresh-token', async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    console.log('Refresh token request headers:', req.headers);
+    console.log('Authorization header:', authHeader);
+
+    if (!authHeader) {
+      return res.status(401).json({ success: false, message: 'No token provided' });
+    }
+
+    // Verify the existing token
+    const token = authHeader.replace('Bearer ', '');
+    console.log('Token to verify:', token);
+
+    try {
+      // Try to decode the token without verification
+      const decoded = jwt.decode(token);
+      console.log('Decoded token:', decoded);
+
+      if (!decoded || !decoded.id) {
+        return res.status(401).json({ success: false, message: 'Invalid token format' });
+      }
+
+      // Check if the user exists
+      const user = await User.findById(decoded.id);
+      if (!user) {
+        return res.status(401).json({ success: false, message: 'User not found' });
+      }
+
+      // Generate a new token
+      const payload = { id: decoded.id, name: decoded.name, email: decoded.email };
+      const newToken = jwt.sign(payload, keys.secretOrKey, { expiresIn: 60 });
+      console.log('New token generated:', newToken);
+
+      res.json({ success: true, token: 'Bearer ' + newToken });
+    } catch (decodeError) {
+      console.error('Token decode error:', decodeError);
+      return res.status(401).json({ success: false, message: 'Invalid token' });
+    }
+  } catch (error) {
+    console.error('Error refreshing token:', error);
+    res.status(401).json({ success: false, message: 'Invalid token' });
   }
 });
 
