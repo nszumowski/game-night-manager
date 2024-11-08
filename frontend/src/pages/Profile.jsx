@@ -5,12 +5,12 @@ import api from '../utils/api';
 const Profile = () => {
   const {userId} = useParams();
   const [user, setUser] = useState(null);
-  const [ownedGames, setOwnedGames] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState('');
   const [error, setError] = useState('');
   const [isOwnProfile, setIsOwnProfile] = useState(true);
   const [isFriend, setIsFriend] = useState(false);
+  const [userGames, setUserGames] = useState([]);
 
   useEffect(() => {
     fetchUser();
@@ -35,7 +35,7 @@ const Profile = () => {
         setIsOwnProfile(true);
       }
       setUser(response.data);
-      setOwnedGames(response.data.ownedGames || []);
+      setUserGames(response.data.ownedGames || []);
     } catch (error) {
       console.error('There was an error fetching the user profile!', error);
     }
@@ -60,18 +60,6 @@ const Profile = () => {
     } catch (error) {
       console.error('Error updating name:', error);
       setError(error.response?.data?.message || 'Failed to update name.');
-    }
-  };
-
-  const removeGame = async (gameId) => {
-    try {
-      const response = await api.post('/users/remove-owned-game', { gameId });
-      if (response.data.success) {
-        setOwnedGames(prev => prev.filter(game => game.bggId !== gameId));
-      }
-    } catch (error) {
-      console.error('Error removing game from owned list:', error);
-      alert('Failed to remove game from owned list.');
     }
   };
 
@@ -153,6 +141,40 @@ const Profile = () => {
       <p className="text-gray-700">Email: {user.email}</p>
       <p className="text-gray-700">Member since: {new Date(user.date).toLocaleDateString()}</p>
       
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">
+          {isOwnProfile ? 'My Games' : `${user.name}'s Games`} ({userGames.length})
+        </h2>
+        {userGames.length > 0 ? (
+          <ul className="list-none pl-0">
+            {userGames.map((game) => (
+              <li key={game._id} className="flex items-center justify-between border-b py-2">
+                <div className="flex items-center">
+                  {game.image && (
+                    <img 
+                      src={game.image} 
+                      alt={game.title} 
+                      className="w-16 h-16 object-contain mr-4"
+                    />
+                  )}
+                  <div>
+                    <span className="text-gray-700 font-medium">
+                      {game.title}
+                    </span>
+                    {game.year && (
+                      <span className="text-gray-500 ml-2">({game.year})</span>
+                    )}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-700">
+            {isOwnProfile ? "You don't own any games yet." : `${user.name} doesn't own any games yet.`}
+          </p>
+        )}
+      </div>
     </div>
   );
 };
