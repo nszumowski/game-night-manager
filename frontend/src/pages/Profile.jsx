@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import api from '../utils/api';
 
 const Profile = () => {
+  const {userId} = useParams();
   const [user, setUser] = useState(null);
   const [ownedGames, setOwnedGames] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState('');
   const [error, setError] = useState('');
+  const [isOwnProfile, setIsOwnProfile] = useState(true);
+  const [isFriend, setIsFriend] = useState(false);
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     if (user) {
@@ -20,7 +24,16 @@ const Profile = () => {
 
   const fetchUser = async () => {
     try {
-      const response = await api.get('/users/profile');
+      let response;
+      if (userId) {
+        response = await api.get(`/users/profile/${userId}`);
+        setIsOwnProfile(false);
+        const friendsResponse = await api.get('/friends/list');
+        setIsFriend(friendsResponse.data.friends.some(friend => friend._id === userId));
+      } else {
+        response = await api.get('/users/profile');
+        setIsOwnProfile(true);
+      }
       setUser(response.data);
       setOwnedGames(response.data.ownedGames || []);
     } catch (error) {
@@ -62,16 +75,37 @@ const Profile = () => {
     }
   };
 
+  const removeFriend = async () => {
+    try {
+      await api.post('/friends/remove', { friendId: userId });
+      setIsFriend(false);
+    } catch (error) {
+      console.error('Error removing friend:', error);
+    }
+  };
+
   if (!user) {
     return <div className="container mx-auto p-4">Loading...</div>;
   }
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Profile</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">
+          {isOwnProfile ? 'My Profile' : `${user.name}'s Profile`}
+        </h1>
+        {!isOwnProfile && isFriend && (
+          <button
+            onClick={removeFriend}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-colors duration-200"
+          >
+            Remove Friend
+          </button>
+        )}
+      </div>
       
       <div className="mb-4">
-        {isEditing ? (
+        {isOwnProfile && isEditing ? (
           <form onSubmit={handleUpdateName} className="flex flex-col gap-2">
             <div>
               <input
@@ -104,12 +138,14 @@ const Profile = () => {
         ) : (
           <div className="flex gap-2 items-center">
             <p className="text-gray-700">Name: {user.name}</p>
-            <button
-              onClick={() => setIsEditing(true)}
-              className="bg-blue-500 text-white p-2 rounded text-sm"
-            >
-              Edit
-            </button>
+            {isOwnProfile && (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="bg-blue-500 text-white p-2 rounded text-sm"
+              >
+                Edit
+              </button>
+            )}
           </div>
         )}
       </div>

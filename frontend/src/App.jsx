@@ -63,7 +63,7 @@ function App() {
           <PrivateRoute path="/game-night/:id" component={GameNight} />
           <PrivateRoute path="/games" component={Games} />
           <PrivateRoute path="/friends" component={Friends} />
-          <PrivateRoute path="/profile" component={Profile} />
+          <PrivateRoute path="/profile/:userId?" component={Profile} />
           <Route path="/" exact component={Home} />
         </Switch>
       </div>

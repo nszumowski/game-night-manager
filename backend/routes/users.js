@@ -212,4 +212,22 @@ router.get('/verify-token', passport.authenticate('jwt', { session: false }), (r
   res.json({ valid: true });
 });
 
+// Get user profile by ID
+router.get('/profile/:userId', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId)
+      .select('-password')  // Exclude password from the response
+      .populate('ownedGames');
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 module.exports = router;
