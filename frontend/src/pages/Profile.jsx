@@ -11,10 +11,14 @@ const Profile = () => {
   const [isOwnProfile, setIsOwnProfile] = useState(true);
   const [isFriend, setIsFriend] = useState(false);
   const [userGames, setUserGames] = useState([]);
+  const [myGames, setMyGames] = useState([]);
 
   useEffect(() => {
     fetchUser();
-  }, [userId]);
+    if (!isOwnProfile) {
+      fetchMyGames();
+    }
+  }, [userId, isOwnProfile]);
 
   useEffect(() => {
     if (user) {
@@ -38,6 +42,15 @@ const Profile = () => {
       setUserGames(response.data.ownedGames || []);
     } catch (error) {
       console.error('There was an error fetching the user profile!', error);
+    }
+  };
+
+  const fetchMyGames = async () => {
+    try {
+      const response = await api.get('/users/profile');
+      setMyGames(response.data.ownedGames || []);
+    } catch (error) {
+      console.error('Error fetching owned games:', error);
     }
   };
 
@@ -147,27 +160,35 @@ const Profile = () => {
         </h2>
         {userGames.length > 0 ? (
           <ul className="list-none pl-0">
-            {userGames.map((game) => (
-              <li key={game._id} className="flex items-center justify-between border-b py-2">
-                <div className="flex items-center">
-                  {game.image && (
-                    <img 
-                      src={game.image} 
-                      alt={game.title} 
-                      className="w-16 h-16 object-contain mr-4"
-                    />
-                  )}
-                  <div>
-                    <span className="text-gray-700 font-medium">
-                      {game.title}
-                    </span>
-                    {game.year && (
-                      <span className="text-gray-500 ml-2">({game.year})</span>
+            {userGames.map((game) => {
+              const iSharedGame = myGames.some(myGame => myGame.bggId === game.bggId);
+              return (
+                <li key={game._id} className="flex items-center justify-between border-b py-2">
+                  <div className="flex items-center">
+                    {game.image && (
+                      <img 
+                        src={game.image} 
+                        alt={game.title} 
+                        className="w-16 h-16 object-contain mr-4"
+                      />
                     )}
+                    <div>
+                      <span className="text-gray-700 font-medium">
+                        {game.title}
+                      </span>
+                      {game.year && (
+                        <span className="text-gray-500 ml-2">({game.year})</span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </li>
-            ))}
+                  {!isOwnProfile && iSharedGame && (
+                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full ml-4">
+                      You own this
+                    </span>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className="text-gray-700">
