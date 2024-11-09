@@ -149,7 +149,7 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 ## TODO
 
 - [ ] **Implement some form of caching for api queries - store search results even if not in database?**
-- [ ] **Implement image caching - clear images viewed less than a month ago? unless a new version is in search or import**
+- [ ] **Implement image caching - clear images viewed less than a month ago? unless a new version is in search or import? store locally?**
 - [ ] Move common components to a shared library
 - [ ] Turn game list into a Component to reuse on my games and friend profiles
 - [ ] Update stored game data from BGG API if changed during a search or import
@@ -169,6 +169,9 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] Invitiations instead of open registration initially?
 - [ ] Develop mobile app versions (iOS/Android)
 - [ ] Add unit and integration tests
+- [x] Buttons should have aria-labels
+- [x] Input fields should have aria-labels and names
+- [x] Lazy load images
 - [x] Fix - 500 error if game is not found in search
 - [x] Get user game list
 - [x] Name update
