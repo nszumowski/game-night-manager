@@ -159,10 +159,12 @@ const Games = () => {
     }
   };
 
-  const MyGames = ({ ownedGames, removeFromOwnedGames }) => {
+  const MyGames = ({ 
+    ownedGames, 
+    removeFromOwnedGames 
+  }) => {
     return (
       <div className="mb-8">
-        MYGAMES
         <h2 className="text-2xl font-bold mb-4">My Games ({ownedGames.length})</h2>
         {ownedGames.length > 0 ? (
           <ul className="list-none pl-0">
@@ -214,6 +216,146 @@ const Games = () => {
     );
   };
 
+  const SearchGames = ({ 
+    searchTerm, 
+    setSearchTerm, 
+    handleSearch, 
+    loading, 
+    error, 
+    detailedGames,
+    addToOwnedGames,
+    removeFromOwnedGames,
+    ownedGames,
+    addedGames,
+    currentPage,
+    totalPages,
+    handlePageChange 
+  }) => {
+    return (
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Search for Games</h2>
+        <form onSubmit={handleSearch} className="mb-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Enter game name"
+                required
+                className="border p-2 rounded flex-grow"
+              />
+              <button 
+                type="submit" 
+                className="bg-blue-500 text-white p-2 rounded"
+                disabled={loading}
+              >
+                {loading ? 'Searching...' : 'Search'}
+              </button>
+            </div>
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded">
+                {error}
+              </div>
+            )}
+          </div>
+        </form>
+        <div className="flex flex-col gap-5">
+          {detailedGames.map(game => (
+            <div key={game.id} className="flex flex-col border border-gray-300 p-5 rounded shadow">
+              <h2 className="text-xl font-bold mb-5">{game.title} ({game.year})</h2>
+              <div className="flex">
+                <img src={game.image} alt="Game" className="max-w-xs max-h-xs object-contain rounded border border-gray-200 p-2" />
+                <div className="flex flex-col mx-5">
+                  <div className="text-sm text-gray-600 mb-3">
+                    {game.minPlayers && game.maxPlayers && (
+                      <span className="mr-3">
+                        {game.minPlayers === game.maxPlayers 
+                          ? `${game.minPlayers} players`
+                          : `${game.minPlayers}-${game.maxPlayers} players`}
+                      </span>
+                    )}
+                    {game.bestWith && (
+                      <span className="text-green-600">{game.bestWith}</span>
+                    )}
+                  </div>
+                  <p className="text-gray-700">{game.description}</p>
+                </div>
+              </div>
+              <div className="flex mt-2">
+                {ownedGames.some(ownedGame => ownedGame.bggId === game.id) ? (
+                  <>
+                    <button 
+                      className="bg-gray-300 text-gray-600 p-2 rounded mr-2 cursor-not-allowed"
+                      disabled
+                    >
+                      Game Already in List
+                    </button>
+                    <button 
+                      onClick={() => removeFromOwnedGames(game.id)}
+                      className="bg-red-500 text-white p-2 rounded"
+                    >
+                      Remove from Owned Games
+                    </button>
+                  </>
+                ) : (
+                  <button 
+                    onClick={() => addToOwnedGames(game)} 
+                    className={`${addedGames[game.id] ? 'bg-green-700' : 'bg-green-500'} text-white p-2 rounded`}
+                    disabled={addedGames[game.id]}
+                  >
+                    {addedGames[game.id] ? 'Game Added' : 'Add to Owned Games'}
+                  </button>
+                )}
+              </div>
+              <details className="mt-2">
+                <summary className="cursor-pointer text-blue-500">Show Raw Data</summary>
+                <pre className="bg-gray-100 p-2 rounded">{game.rawData}</pre>
+              </details>
+            </div>
+          ))}
+        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      </div>
+    );
+  };
+
+  const ImportGames = ({ 
+    bggUsername, 
+    setBggUsername, 
+    handleImportCollection, 
+    importLoading, 
+    error 
+  }) => {
+    return (
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Import BGG Collection</h2>
+        <form onSubmit={handleImportCollection} className="mb-4">
+          <input
+            type="text"
+            value={bggUsername}
+            onChange={(e) => setBggUsername(e.target.value)}
+            placeholder="Enter BGG Username"
+            required
+            className="border p-2 rounded mr-2"
+          />
+          <button 
+            type="submit" 
+            className="bg-blue-500 text-white p-2 rounded mt-2"
+            disabled={importLoading}
+          >
+            {importLoading ? 'Importing...' : 'Import'}
+          </button>
+        </form>
+        {error && <p className="text-red-500 mt-2">{error}</p>}
+      </div>
+    );
+  };
+
   const tabs = [
     { id: 'owned', label: 'My Games' },
     { id: 'search', label: 'Search for Games' },
@@ -222,7 +364,6 @@ const Games = () => {
 
   return (
     <div className="container mx-auto p-4">
-      RETURN
       <h1 className="text-2xl font-bold mb-4">Games</h1>
       
       {/* Tab Navigation */}
@@ -251,119 +392,31 @@ const Games = () => {
       )}
 
       {activeTab === 'search' && (
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Search for Games</h2>
-          <form onSubmit={handleSearch} className="mb-4">
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Enter game name"
-                  required
-                  className="border p-2 rounded flex-grow"
-                />
-                <button 
-                  type="submit" 
-                  className="bg-blue-500 text-white p-2 rounded"
-                  disabled={loading}
-                >
-                  {loading ? 'Searching...' : 'Search'}
-                </button>
-              </div>
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded">
-                  {error}
-                </div>
-              )}
-            </div>
-          </form>
-          <div className="flex flex-col gap-5">
-            {detailedGames.map(game => (
-              <div key={game.id} className="flex flex-col border border-gray-300 p-5 rounded shadow">
-                <h2 className="text-xl font-bold mb-5">{game.title} ({game.year})</h2>
-                <div className="flex">
-                  <img src={game.image} alt="Game" className="max-w-xs max-h-xs object-contain rounded border border-gray-200 p-2" />
-                  <div className="flex flex-col mx-5">
-                    <div className="text-sm text-gray-600 mb-3">
-                      {game.minPlayers && game.maxPlayers && (
-                        <span className="mr-3">
-                          {game.minPlayers === game.maxPlayers 
-                            ? `${game.minPlayers} players`
-                            : `${game.minPlayers}-${game.maxPlayers} players`}
-                        </span>
-                      )}
-                      {game.bestWith && (
-                        <span className="text-green-600">{game.bestWith}</span>
-                      )}
-                    </div>
-                    <p className="text-gray-700">{game.description}</p>
-                  </div>
-                </div>
-                <div className="flex mt-2">
-                {ownedGames.some(ownedGame => ownedGame.bggId === game.id) ? (
-                  <>
-                    <button 
-                      className="bg-gray-300 text-gray-600 p-2 rounded mr-2 cursor-not-allowed"
-                      disabled
-                    >
-                      Game Already in List
-                    </button>
-                    <button 
-                      onClick={() => removeFromOwnedGames(game.id)}
-                      className="bg-red-500 text-white p-2 rounded"
-                    >
-                      Remove from Owned Games
-                    </button>
-                  </>
-                ) : (
-                  <button 
-                    onClick={() => addToOwnedGames(game)} 
-                    className={`${addedGames[game.id] ? 'bg-green-700' : 'bg-green-500'} text-white p-2 rounded`}
-                    disabled={addedGames[game.id]}
-                  >
-                    {addedGames[game.id] ? 'Game Added' : 'Add to Owned Games'}
-                  </button>
-                )}
-                </div>
-                <details className="mt-2">
-                  <summary className="cursor-pointer text-blue-500">Show Raw Data</summary>
-                  <pre className="bg-gray-100 p-2 rounded">{game.rawData}</pre>
-                </details>
-              </div>
-            ))}
-          </div>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </div>
+        <SearchGames 
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          handleSearch={handleSearch}
+          loading={loading}
+          error={error}
+          detailedGames={detailedGames}
+          addToOwnedGames={addToOwnedGames}
+          removeFromOwnedGames={removeFromOwnedGames}
+          ownedGames={ownedGames}
+          addedGames={addedGames}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+        />
       )}
 
       {activeTab === 'import' && (
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Import BGG Collection</h2>
-          <form onSubmit={handleImportCollection} className="mb-4">
-            <input
-              type="text"
-              value={bggUsername}
-              onChange={(e) => setBggUsername(e.target.value)}
-              placeholder="Enter BGG Username"
-              required
-              className="border p-2 rounded mr-2"
-            />
-            <button 
-              type="submit" 
-              className="bg-blue-500 text-white p-2 rounded mt-2"
-              disabled={importLoading}
-            >
-              {importLoading ? 'Importing...' : 'Import'}
-            </button>
-          </form>
-          {error && <p className="text-red-500 mt-2">{error}</p>}
-        </div>
+        <ImportGames 
+          bggUsername={bggUsername}
+          setBggUsername={setBggUsername}
+          handleImportCollection={handleImportCollection}
+          importLoading={importLoading}
+          error={error}
+        />
       )}
     </div>
   );
