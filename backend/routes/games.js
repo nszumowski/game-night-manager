@@ -66,15 +66,47 @@ router.get('/details', async (req, res) => {
   }
 
   try {
-    const response = await axios.get(`https://www.boardgamegeek.com/xmlapi2/thing?id=${id}`);
+    const response = await axios.get(`https://www.boardgamegeek.com/xmlapi2/thing?id=${id}&stats=1`);
     const result = await parseXML(response.data);
     const item = result.items.item[0];
+
+    // Get basic info
     const primaryNameElement = item.name.find(name => name.$.type === 'primary');
     const title = primaryNameElement ? primaryNameElement.$.value : item.name[0].$.value;
     const image = item.thumbnail ? item.thumbnail[0] : 'No image available';
     const description = item.description ? item.description[0] : 'No description available';
-    const rawData = response.data; // Use the raw XML data
-    const gameDetails = { id, title, image, description, rawData };
+
+    // Get player counts
+    const minPlayers = item.minplayers ? parseInt(item.minplayers[0].$.value) : null;
+    const maxPlayers = item.maxplayers ? parseInt(item.maxplayers[0].$.value) : null;
+
+    // Get best with count from poll
+    let bestWith = null;
+    if (item.poll) {
+      const playerCountPoll = item.poll.find(poll => poll.$.name === 'suggested_numplayers');
+      if (playerCountPoll) {
+        let highestVotes = 0;
+        playerCountPoll.results.forEach(result => {
+          const bestVotes = parseInt(result.result.find(r => r.$.value === 'Best')?.$.numvotes || 0);
+          if (bestVotes > highestVotes) {
+            highestVotes = bestVotes;
+            bestWith = `Best with ${result.$.numplayers} players`;
+          }
+        });
+      }
+    }
+
+    const gameDetails = {
+      id,
+      title,
+      image,
+      description,
+      minPlayers,
+      maxPlayers,
+      bestWith,
+      rawData: response.data
+    };
+
     cache.set(cacheKey, gameDetails);
     res.json(gameDetails);
   } catch (err) {
@@ -101,11 +133,46 @@ router.get('/collection', async (req, res) => {
     }
 
     const items = Array.isArray(result.items.item) ? result.items.item : [result.items.item];
-    const gamesArray = items.map(item => ({
-      id: item.$.objectid,
-      title: item.name[0]._,
-      yearPublished: item.yearpublished && item.yearpublished[0],
-      image: item.thumbnail && item.thumbnail[0]
+
+    // Fetch detailed information for each game
+    const gamesArray = await Promise.all(items.map(async item => {
+      const gameId = item.$.objectid;
+      // Use the existing details endpoint to maintain consistency
+      const detailsResponse = await axios.get(`https://www.boardgamegeek.com/xmlapi2/thing?id=${gameId}&stats=1`);
+      const detailsResult = await parseXML(detailsResponse.data);
+      const gameItem = detailsResult.items.item[0];
+
+      const primaryNameElement = gameItem.name.find(name => name.$.type === 'primary');
+      const title = primaryNameElement ? primaryNameElement.$.value : gameItem.name[0].$.value;
+      const minPlayers = gameItem.minplayers ? parseInt(gameItem.minplayers[0].$.value) : null;
+      const maxPlayers = gameItem.maxplayers ? parseInt(gameItem.maxplayers[0].$.value) : null;
+      const image = gameItem.thumbnail ? gameItem.thumbnail[0] : null;
+      const year = gameItem.yearpublished ? gameItem.yearpublished[0].$.value : null;
+
+      let bestWith = null;
+      if (gameItem.poll) {
+        const playerCountPoll = gameItem.poll.find(poll => poll.$.name === 'suggested_numplayers');
+        if (playerCountPoll) {
+          let highestVotes = 0;
+          playerCountPoll.results.forEach(result => {
+            const bestVotes = parseInt(result.result.find(r => r.$.value === 'Best')?.$.numvotes || 0);
+            if (bestVotes > highestVotes) {
+              highestVotes = bestVotes;
+              bestWith = `Best with ${result.$.numplayers} players`;
+            }
+          });
+        }
+      }
+
+      return {
+        id: gameId,
+        title,
+        year,
+        image,
+        minPlayers,
+        maxPlayers,
+        bestWith
+      };
     }));
 
     cache.set(cacheKey, gamesArray);

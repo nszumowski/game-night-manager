@@ -74,11 +74,27 @@ router.post('/login', async (req, res) => {
 // Profile route
 router.get('/profile', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).populate('ownedGames');
-    res.json(user);
-  } catch (error) {
-    console.error('Error fetching user profile:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    const user = await User.findById(req.user.id)
+      .populate({
+        path: 'ownedGames',
+        select: 'title bggId year image minPlayers maxPlayers bestWith'
+      });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        date: user.date
+      },
+      ownedGames: user.ownedGames
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -116,15 +132,28 @@ router.put('/update-profile', passport.authenticate('jwt', { session: false }), 
 // Add game to owned games list route
 router.post('/add-owned-game', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    const { gameTitle, gameId } = req.body;
+    const { gameTitle, gameId, minPlayers, maxPlayers, bestWith, year, image } = req.body;
     const user = await User.findById(req.user.id);
 
     let game = await Game.findOne({ bggId: gameId });
     if (!game) {
       game = new Game({
         title: gameTitle,
-        bggId: gameId
+        bggId: gameId,
+        minPlayers,
+        maxPlayers,
+        bestWith,
+        year,
+        image
       });
+      await game.save();
+    } else {
+      // Update existing game with new data
+      game.minPlayers = minPlayers;
+      game.maxPlayers = maxPlayers;
+      game.bestWith = bestWith;
+      game.year = year;
+      game.image = image;
       await game.save();
     }
 

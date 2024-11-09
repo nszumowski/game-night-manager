@@ -16,7 +16,7 @@ const GameSchema = new Schema({
   image: String,
   minPlayers: Number,
   maxPlayers: Number,
-  playingTime: Number
+  bestWith: String
 });
 
 module.exports = Game = mongoose.model('games', GameSchema);

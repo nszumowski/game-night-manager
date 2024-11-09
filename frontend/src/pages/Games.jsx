@@ -91,14 +91,30 @@ const Games = () => {
     }
   };
 
-  const addToOwnedGames = async (gameTitle, gameId) => {
+  const addToOwnedGames = async (game) => {
     try {
-      const response = await api.post('/users/add-owned-game', { gameTitle, gameId });
+      const response = await api.post('/users/add-owned-game', {
+        gameTitle: game.title,
+        gameId: game.id,
+        minPlayers: game.minPlayers,
+        maxPlayers: game.maxPlayers,
+        bestWith: game.bestWith,
+        year: game.year,
+        image: game.image
+      });
       if (response.data.success) {
-        setOwnedGames(prev => [...prev, { title: gameTitle, bggId: gameId }]);
-        setAddedGames(prev => ({ ...prev, [gameId]: true }));
+        setOwnedGames(prev => [...prev, {
+          title: game.title,
+          bggId: game.id,
+          minPlayers: game.minPlayers,
+          maxPlayers: game.maxPlayers,
+          bestWith: game.bestWith,
+          year: game.year,
+          image: game.image
+        }]);
+        setAddedGames(prev => ({ ...prev, [game.id]: true }));
         setTimeout(() => {
-          setAddedGames(prev => ({ ...prev, [gameId]: false }));
+          setAddedGames(prev => ({ ...prev, [game.id]: false }));
         }, 2000);
       }
     } catch (error) {
@@ -131,7 +147,7 @@ const Games = () => {
       
       // Add each game to the owned games list
       for (const game of response.data) {
-        await addToOwnedGames(game.title, game.id);
+        await addToOwnedGames(game);
       }
       
       alert('Collection imported successfully!');
@@ -146,6 +162,7 @@ const Games = () => {
   const MyGames = ({ ownedGames, removeFromOwnedGames }) => {
     return (
       <div className="mb-8">
+        MYGAMES
         <h2 className="text-2xl font-bold mb-4">My Games ({ownedGames.length})</h2>
         {ownedGames.length > 0 ? (
           <ul className="list-none pl-0">
@@ -166,6 +183,18 @@ const Games = () => {
                     {game.year && (
                       <span className="text-gray-500 ml-2">({game.year})</span>
                     )}
+                    <div className="text-sm text-gray-600 mt-1">
+                      {game.minPlayers && game.maxPlayers && (
+                        <span className="mr-3">
+                          {game.minPlayers === game.maxPlayers 
+                            ? `${game.minPlayers} players`
+                            : `${game.minPlayers}-${game.maxPlayers} players`}
+                        </span>
+                      )}
+                      {game.bestWith && (
+                        <span className="text-green-600">{game.bestWith}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <button
@@ -193,6 +222,7 @@ const Games = () => {
 
   return (
     <div className="container mx-auto p-4">
+      RETURN
       <h1 className="text-2xl font-bold mb-4">Games</h1>
       
       {/* Tab Navigation */}
@@ -255,7 +285,21 @@ const Games = () => {
                 <h2 className="text-xl font-bold mb-5">{game.title} ({game.year})</h2>
                 <div className="flex">
                   <img src={game.image} alt="Game" className="max-w-xs max-h-xs object-contain rounded border border-gray-200 p-2" />
-                  <p className="text-gray-700 mx-5">{game.description}</p>
+                  <div className="flex flex-col mx-5">
+                    <div className="text-sm text-gray-600 mb-3">
+                      {game.minPlayers && game.maxPlayers && (
+                        <span className="mr-3">
+                          {game.minPlayers === game.maxPlayers 
+                            ? `${game.minPlayers} players`
+                            : `${game.minPlayers}-${game.maxPlayers} players`}
+                        </span>
+                      )}
+                      {game.bestWith && (
+                        <span className="text-green-600">{game.bestWith}</span>
+                      )}
+                    </div>
+                    <p className="text-gray-700">{game.description}</p>
+                  </div>
                 </div>
                 <div className="flex mt-2">
                 {ownedGames.some(ownedGame => ownedGame.bggId === game.id) ? (
@@ -275,7 +319,7 @@ const Games = () => {
                   </>
                 ) : (
                   <button 
-                    onClick={() => addToOwnedGames(game.title, game.id)} 
+                    onClick={() => addToOwnedGames(game)} 
                     className={`${addedGames[game.id] ? 'bg-green-700' : 'bg-green-500'} text-white p-2 rounded`}
                     disabled={addedGames[game.id]}
                   >

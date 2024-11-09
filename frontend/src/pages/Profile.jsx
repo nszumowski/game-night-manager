@@ -179,6 +179,18 @@ const Profile = () => {
                       {game.year && (
                         <span className="text-gray-500 ml-2">({game.year})</span>
                       )}
+                      <div className="text-sm text-gray-600 mt-1">
+                        {game.minPlayers && game.maxPlayers && (
+                          <span className="mr-3">
+                            {game.minPlayers === game.maxPlayers 
+                              ? `${game.minPlayers} players`
+                              : `${game.minPlayers}-${game.maxPlayers} players`}
+                          </span>
+                        )}
+                        {game.bestWith && (
+                          <span className="text-green-600">{game.bestWith}</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   {!isOwnProfile && iSharedGame && (
