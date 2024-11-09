@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import api from '../utils/api';
 
 const Games = () => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -11,7 +10,6 @@ const Games = () => {
   const [detailedGames, setDetailedGames] = useState([]);
   const [addedGames, setAddedGames] = useState({});
   const [ownedGames, setOwnedGames] = useState([]);
-  const [bggUsername, setBggUsername] = useState('');
   const [importLoading, setImportLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('owned');
 
