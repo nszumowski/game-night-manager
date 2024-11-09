@@ -111,12 +111,14 @@ const Profile = () => {
           <form onSubmit={handleUpdateName} className="flex flex-col gap-2">
             <div>
               <input
+                name="name"
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 className="border p-2 rounded"
                 required
                 maxLength={50}
+                aria-label="Edit name"
               />
               {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
             </div>

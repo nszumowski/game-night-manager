@@ -51,6 +51,7 @@ const Register = () => {
         <div className="mb-4">
           <label className="block text-gray-700">Name:</label>
           <input
+            name="name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -58,39 +59,46 @@ const Register = () => {
             maxLength={50}
             autoComplete="name"
             className="border p-2 rounded w-full"
+            aria-label="Name"
           />
         </div>
         <div className="mb-4">
           <label className="block text-gray-700">Email:</label>
           <input
+            name="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="email"
             className="border p-2 rounded w-full"
+            aria-label="Email"
           />
         </div>
         <div className="mb-4">
           <label className="block text-gray-700">Password:</label>
           <input
+            name="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             autoComplete="new-password"
             className="border p-2 rounded w-full"
+            aria-label="Password"
           />
         </div>
         <div className="mb-4">
           <label className="block text-gray-700">Confirm Password:</label>
           <input
+            name="confirmPassword"
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             autoComplete="new-password"
             className="border p-2 rounded w-full"
+            aria-label="Confirm password"
           />
         </div>
         <button type="submit" className="bg-blue-500 text-white p-2 rounded" aria-label="Register">Register</button>

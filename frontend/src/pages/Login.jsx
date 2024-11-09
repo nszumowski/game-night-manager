@@ -37,23 +37,27 @@ const Login = ({ setIsLoggedIn }) => {
         <div className="mb-4">
           <label className="block text-gray-700">Email:</label>
           <input
+            name="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="email"
             className="border p-2 rounded w-full"
+            aria-label="Email"
           />
         </div>
         <div className="mb-4">
           <label className="block text-gray-700">Password:</label>
           <input
+            name="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             autoComplete="current-password"
             className="border p-2 rounded w-full"
+            aria-label="Password"
           />
         </div>
         <button type="submit" className="bg-blue-500 text-white p-2 rounded" aria-label="Login">Login</button>
