@@ -118,12 +118,16 @@ const Friends = () => {
     );
   };
 
-  const SearchFriends = ({ handleSearch, searchResults, sendFriendRequest, error, hasSearched }) => {
+  const SearchFriends = ({ handleSearch, searchResults, sendFriendRequest, error, hasSearched, friends }) => {
     const [localSearchEmail, setLocalSearchEmail] = useState('');
 
     const handleSubmit = (e) => {
       e.preventDefault();
       handleSearch(e, localSearchEmail);
+    };
+
+    const isAlreadyFriend = (userId) => {
+      return friends.some(friend => friend._id === userId);
     };
 
     console.log('SearchFriends render:', { searchResults, error, hasSearched });
@@ -165,13 +169,19 @@ const Friends = () => {
                   <p className="font-medium">{user.name}</p>
                   <p className="text-gray-600">{user.email}</p>
                 </div>
-                <button
-                  onClick={() => sendFriendRequest(user._id)}
-                  aria-label={`Send friend request to ${user.name}`}
-                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                >
-                  Add Friend
-                </button>
+                {isAlreadyFriend(user._id) ? (
+                  <span className="text-gray-500 px-3 py-1">
+                    Already Friends
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => sendFriendRequest(user._id)}
+                    aria-label={`Send friend request to ${user.name}`}
+                    className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                  >
+                    Add Friend
+                  </button>
+                )}
               </li>
             ))}
           </ul>
@@ -262,6 +272,7 @@ const Friends = () => {
           sendFriendRequest={sendFriendRequest}
           error={searchError}
           hasSearched={hasSearched}
+          friends={friends}
         />
       )}
 
