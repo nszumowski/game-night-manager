@@ -24,17 +24,35 @@ const Games = () => {
     setLoading(true);
     setError(null);
     setCurrentPage(1);
+    setDetailedGames([]);
 
     try {
       const response = await api.get('/games/search', {
         params: { query: searchTerm }
       });
+      
+      if (response.status === 404) {
+        setError('No games found matching your search.');
+        setGames([]);
+        setTotalPages(0);
+        return;
+      }
+
       const gamesArray = response.data;
       setGames(gamesArray);
-      setTotalPages(Math.ceil(gamesArray.length / 25)); // Calculate total pages
-      fetchDetailedGames(gamesArray.slice(0, 25)); // Fetch details for the first page
+      setTotalPages(Math.ceil(gamesArray.length / 25));
+      
+      if (gamesArray.length > 0) {
+        fetchDetailedGames(gamesArray.slice(0, 25));
+      }
     } catch (err) {
-      setError('There was an error fetching the games.');
+      if (err.response?.status === 404) {
+        setError('No games found matching your search.');
+      } else {
+        setError('There was an error searching for games. Please try again.');
+      }
+      setGames([]);
+      setTotalPages(0);
     } finally {
       setLoading(false);
     }
@@ -206,18 +224,31 @@ const Games = () => {
         <div>
           <h2 className="text-2xl font-bold mb-4">Search for Games</h2>
           <form onSubmit={handleSearch} className="mb-4">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Enter game name"
-              required
-              className="border p-2 rounded mr-2"
-            />
-            <button type="submit" className="bg-blue-500 text-white p-2 rounded mt-2">Search</button>
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Enter game name"
+                  required
+                  className="border p-2 rounded flex-grow"
+                />
+                <button 
+                  type="submit" 
+                  className="bg-blue-500 text-white p-2 rounded"
+                  disabled={loading}
+                >
+                  {loading ? 'Searching...' : 'Search'}
+                </button>
+              </div>
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded">
+                  {error}
+                </div>
+              )}
+            </div>
           </form>
-          {loading && <p>Loading...</p>}
-          {error && <p>{error}</p>}
           <div className="flex flex-col gap-5">
             {detailedGames.map(game => (
               <div key={game.id} className="flex flex-col border border-gray-300 p-5 rounded shadow">

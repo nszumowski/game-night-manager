@@ -25,22 +25,34 @@ router.get('/search', async (req, res) => {
   const cacheKey = `search_${query}`;
 
   if (cache.has(cacheKey)) {
-    return res.json(cache.get(cacheKey));
+    const cachedResults = cache.get(cacheKey);
+    if (cachedResults.length === 0) {
+      return res.status(404).json({ message: 'No games found matching your search.' });
+    }
+    return res.json(cachedResults);
   }
 
   try {
     const response = await axios.get(`https://www.boardgamegeek.com/xmlapi2/search?query=${query}&type=boardgame`);
     const result = await parseXML(response.data);
-    const items = result.items.item;
+
+    if (!result.items || !result.items.item) {
+      cache.set(cacheKey, []);
+      return res.status(404).json({ message: 'No games found matching your search.' });
+    }
+
+    const items = Array.isArray(result.items.item) ? result.items.item : [result.items.item];
     const gamesArray = items.map(item => ({
       id: item.$.id,
-      year: item.yearpublished ? item.yearpublished[0].$.value : 'Unknown'
+      title: item.name[0].$.value,
+      year: item.yearpublished ? item.yearpublished[0].$.value : null
     }));
+
     cache.set(cacheKey, gamesArray);
     res.json(gamesArray);
   } catch (err) {
-    console.error('Error fetching games:', err);
-    res.status(500).json({ error: 'There was an error fetching the games.' });
+    console.error('Error searching games:', err);
+    res.status(500).json({ message: 'There was an error searching for games.' });
   }
 });
 
