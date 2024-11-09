@@ -176,6 +176,8 @@ const Games = () => {
                       src={game.image} 
                       alt={game.title} 
                       className="w-16 h-16 object-contain mr-4"
+                      loading="lazy"
+                      onError={(e) => e.target.src = '/placeholder-game.png'}
                     />
                   )}
                   <div>
@@ -265,7 +267,13 @@ const Games = () => {
             <div key={game.id} className="flex flex-col border border-gray-300 p-5 rounded shadow">
               <h2 className="text-xl font-bold mb-5">{game.title} ({game.year})</h2>
               <div className="flex">
-                <img src={game.image} alt="Game" className="max-w-xs max-h-xs object-contain rounded border border-gray-200 p-2" />
+                <img 
+                  src={game.image} 
+                  alt={game.title}
+                  className="max-w-xs max-h-xs object-contain rounded border border-gray-200 p-2" 
+                  loading="lazy"
+                  onError={(e) => e.target.src = '/placeholder-game.png'}
+                />
                 <div className="flex flex-col mx-5">
                   <div className="text-sm text-gray-600 mb-3">
                     {game.minPlayers && game.maxPlayers && (

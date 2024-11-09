@@ -170,6 +170,8 @@ const Profile = () => {
                         src={game.image} 
                         alt={game.title} 
                         className="w-16 h-16 object-contain mr-4"
+                        loading="lazy"
+                        onError={(e) => e.target.src = '/placeholder-game.png'}
                       />
                     )}
                     <div>
