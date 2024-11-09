@@ -148,9 +148,15 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 
 ## TODO
 
-- [ ] Fix - Menu update when logged in/out
+- [ ] **Implement some form of caching for api queries - store search results even if not in database?**
+- [ ] **Implement image caching - clear images viewed less than a month ago? unless a new version is in search or import**
+- [ ] Move common components to a shared library
 - [ ] Turn game list into a Component to reuse on my games and friend profiles
-- [ ] Profile - Email update
+- [ ] Update stored game data from BGG API if changed during a search or import
+- [ ] Fix - Menu update when logged in/out
+- [ ] Profile - User image upload and display in profiles and user search
+- [ ] Profile - BGG name field
+- [ ] Profile - Update button should allow editing for all profile fields, not just email
 - [ ] Profile - Update/Forgot Password functionality
 - [ ] Emails for friend requests and game night invitations
 - [ ] Games - Pull number of players and playtime from BGG API
@@ -160,6 +166,7 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] Game Night - Integrate messaging system or real-time chat for game nights
 - [ ] Game Night - Implement voting system for game selection - random, ranked, weighted? This is optional, the game manager can pick the game(s) or make a poll
 - [ ] oAuth?
+- [ ] Invitiations instead of open registration initially?
 - [ ] Develop mobile app versions (iOS/Android)
 - [ ] Add unit and integration tests
 - [x] Fix - 500 error if game is not found in search
