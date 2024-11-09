@@ -56,7 +56,7 @@ const Login = ({ setIsLoggedIn }) => {
             className="border p-2 rounded w-full"
           />
         </div>
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">Login</button>
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded" aria-label="Login">Login</button>
       </form>
     </div>
   );

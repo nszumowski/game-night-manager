@@ -93,7 +93,7 @@ const Register = () => {
             className="border p-2 rounded w-full"
           />
         </div>
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">Register</button>
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded" aria-label="Register">Register</button>
       </form>
     </div>
   );

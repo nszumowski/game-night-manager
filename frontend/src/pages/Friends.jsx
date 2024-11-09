@@ -84,6 +84,7 @@ const Friends = () => {
                 </Link>
                 <button
                   onClick={() => removeFriend(friend._id)}
+                  aria-label={`Remove friend ${friend.name}`}
                   className="text-red-500 hover:bg-red-500 hover:text-white px-3 py-1 rounded transition-colors duration-200"
                 >
                   Remove
@@ -111,12 +112,14 @@ const Friends = () => {
         <form onSubmit={handleSearch} className="mb-4">
           <input
             type="email"
+            name="friendSearch"
+            aria-label="Search friends by email"
             value={searchEmail}
             onChange={(e) => setSearchEmail(e.target.value)}
             placeholder="Search by email"
             className="border p-2 rounded mr-2"
           />
-          <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+          <button type="submit" className="bg-blue-500 text-white p-2 rounded" aria-label="Search for friends by email">
             Search
           </button>
         </form>
@@ -130,6 +133,7 @@ const Friends = () => {
                 </div>
                 <button
                   onClick={() => sendFriendRequest(user._id)}
+                  aria-label={`Send friend request to ${user.name}`}
                   className="bg-green-500 text-white px-3 py-1 rounded"
                 >
                   Add Friend
@@ -160,12 +164,14 @@ const Friends = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleFriendRequest(request._id, 'accept')}
+                    aria-label={`Accept friend request from ${request.from.name}`}
                     className="bg-green-500 text-white px-3 py-1 rounded"
                   >
                     Accept
                   </button>
                   <button
                     onClick={() => handleFriendRequest(request._id, 'reject')}
+                    aria-label={`Reject friend request from ${request.from.name}`}
                     className="bg-red-500 text-white px-3 py-1 rounded"
                   >
                     Reject
@@ -190,6 +196,7 @@ const Friends = () => {
         {tabs.map(tab => (
           <button
             key={tab.id}
+            aria-label={`Switch to ${tab.label} tab`}
             className={`py-2 px-4 mr-2 ${
               activeTab === tab.id
                 ? 'border-b-2 border-blue-500 text-blue-500 font-semibold'

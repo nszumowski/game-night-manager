@@ -202,6 +202,7 @@ const Games = () => {
                   </div>
                 </div>
                 <button
+                  aria-label={`Remove ${game.title} from owned games`}
                   className="text-red-500 hover:bg-red-500 hover:text-white px-2 py-1 rounded transition-colors duration-200 group"
                   onClick={() => removeFromOwnedGames(game.bggId)}
                 >
@@ -241,6 +242,8 @@ const Games = () => {
             <div className="flex gap-2">
               <input
                 type="text"
+                name="gameSearch"
+                aria-label="Search for games"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Enter game name"
@@ -249,6 +252,7 @@ const Games = () => {
               />
               <button 
                 type="submit" 
+                aria-label={loading ? "Searching for games..." : "Search for games"}
                 className="bg-blue-500 text-white p-2 rounded"
                 disabled={loading}
               >
@@ -295,12 +299,14 @@ const Games = () => {
                   <>
                     <button 
                       className="bg-gray-300 text-gray-600 p-2 rounded mr-2 cursor-not-allowed"
+                      aria-label={`${game.title} is already in your collection`}
                       disabled
                     >
                       Game Already in List
                     </button>
                     <button 
                       onClick={() => removeFromOwnedGames(game.id)}
+                      aria-label={`Remove ${game.title} from your collection`}
                       className="bg-red-500 text-white p-2 rounded"
                     >
                       Remove from Owned Games
@@ -308,7 +314,8 @@ const Games = () => {
                   </>
                 ) : (
                   <button 
-                    onClick={() => addToOwnedGames(game)} 
+                    onClick={() => addToOwnedGames(game)}
+                    aria-label={addedGames[game.id] ? `${game.title} added to collection` : `Add ${game.title} to your collection`}
                     className={`${addedGames[game.id] ? 'bg-green-700' : 'bg-green-500'} text-white p-2 rounded`}
                     disabled={addedGames[game.id]}
                   >
@@ -345,6 +352,8 @@ const Games = () => {
         <form onSubmit={handleImportCollection} className="mb-4">
           <input
             type="text"
+            name="bggUsername"
+            aria-label="BoardGameGeek username"
             value={bggUsername}
             onChange={(e) => setBggUsername(e.target.value)}
             placeholder="Enter BGG Username"
@@ -353,6 +362,7 @@ const Games = () => {
           />
           <button 
             type="submit" 
+            aria-label={importLoading ? "Importing BGG collection..." : "Import BGG collection"}
             className="bg-blue-500 text-white p-2 rounded mt-2"
             disabled={importLoading}
           >
@@ -379,6 +389,7 @@ const Games = () => {
         {tabs.map(tab => (
           <button
             key={tab.id}
+            aria-label={`Switch to ${tab.label} tab`}
             className={`py-2 px-4 mr-2 ${
               activeTab === tab.id
                 ? 'border-b-2 border-blue-500 text-blue-500 font-semibold'
@@ -441,6 +452,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       {pages.map(page => (
         <button
           key={page}
+          aria-label={`Go to page ${page}`}
+          aria-current={page === currentPage ? 'page' : undefined}
           className={`mx-1 px-3 py-1 border rounded ${page === currentPage ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'}`}
           onClick={() => onPageChange(page)}
         >

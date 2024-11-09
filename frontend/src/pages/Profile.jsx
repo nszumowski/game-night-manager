@@ -98,6 +98,7 @@ const Profile = () => {
         {!isOwnProfile && isFriend && (
           <button
             onClick={removeFriend}
+            aria-label="Remove friend"
             className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-colors duration-200"
           >
             Remove Friend
@@ -120,7 +121,7 @@ const Profile = () => {
               {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
             </div>
             <div className="flex gap-2">
-              <button type="submit" className="bg-green-500 text-white p-2 rounded">
+              <button type="submit" className="bg-green-500 text-white p-2 rounded" aria-label="Save name">
                 Save
               </button>
               <button
@@ -131,6 +132,7 @@ const Profile = () => {
                   setError('');
                 }}
                 className="bg-gray-500 text-white p-2 rounded"
+                aria-label="Cancel name edit"
               >
                 Cancel
               </button>
@@ -143,6 +145,7 @@ const Profile = () => {
               <button
                 onClick={() => setIsEditing(true)}
                 className="bg-blue-500 text-white p-2 rounded text-sm"
+                aria-label="Edit name"
               >
                 Edit
               </button>
