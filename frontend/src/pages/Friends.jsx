@@ -24,10 +24,10 @@ const Friends = () => {
     }
   };
 
-  const handleSearch = async (e) => {
+  const handleSearch = async (e, email) => {
     e.preventDefault();
     try {
-      const response = await api.get(`/friends/search?email=${searchEmail}`);
+      const response = await api.get(`/friends/search?email=${email}`);
       setSearchResults(response.data);
     } catch (error) {
       setError('Error searching users');
@@ -99,23 +99,24 @@ const Friends = () => {
     );
   };
 
-  const SearchFriends = ({ 
-    searchEmail, 
-    setSearchEmail, 
-    handleSearch, 
-    searchResults, 
-    sendFriendRequest 
-  }) => {
+  const SearchFriends = ({ handleSearch, searchResults, sendFriendRequest }) => {
+    const [localSearchEmail, setLocalSearchEmail] = useState('');
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      handleSearch(e, localSearchEmail);
+    };
+
     return (
       <div>
         <h2 className="text-2xl font-bold mb-4">Search for Friends</h2>
-        <form onSubmit={handleSearch} className="mb-4">
+        <form onSubmit={handleSubmit} className="mb-4">
           <input
             type="email"
             name="friendSearch"
             aria-label="Search friends by email"
-            value={searchEmail}
-            onChange={(e) => setSearchEmail(e.target.value)}
+            value={localSearchEmail}
+            onChange={(e) => setLocalSearchEmail(e.target.value)}
             placeholder="Search by email"
             className="border p-2 rounded mr-2"
           />
@@ -219,8 +220,6 @@ const Friends = () => {
 
       {activeTab === 'search' && (
         <SearchFriends
-          searchEmail={searchEmail}
-          setSearchEmail={setSearchEmail}
           handleSearch={handleSearch}
           searchResults={searchResults}
           sendFriendRequest={sendFriendRequest}

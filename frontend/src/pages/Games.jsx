@@ -19,8 +19,7 @@ const Games = () => {
     fetchOwnedGames();
   }, []);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
+  const handleSearch = async (searchTerm) => {
     setLoading(true);
     setError(null);
     setCurrentPage(1);
@@ -135,14 +134,14 @@ const Games = () => {
     }
   };
 
-  const handleImportCollection = async (e) => {
+  const handleImportCollection = async (e, username) => {
     e.preventDefault();
     setImportLoading(true);
     setError(null);
 
     try {
       const response = await api.get('/games/collection', {
-        params: { username: bggUsername }
+        params: { username }
       });
       
       // Add each game to the owned games list
@@ -155,7 +154,6 @@ const Games = () => {
       setError('There was an error importing your collection.');
     } finally {
       setImportLoading(false);
-      setBggUsername('');
     }
   };
 
@@ -220,32 +218,37 @@ const Games = () => {
   };
 
   const SearchGames = ({ 
-    searchTerm, 
-    setSearchTerm, 
     handleSearch, 
     loading, 
     error, 
-    detailedGames,
-    addToOwnedGames,
-    removeFromOwnedGames,
-    ownedGames,
-    addedGames,
-    currentPage,
-    totalPages,
+    detailedGames, 
+    addToOwnedGames, 
+    removeFromOwnedGames, 
+    ownedGames, 
+    addedGames, 
+    currentPage, 
+    totalPages, 
     handlePageChange 
   }) => {
+    const [localSearchTerm, setLocalSearchTerm] = useState('');
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      handleSearch(localSearchTerm);
+    };
+
     return (
       <div>
         <h2 className="text-2xl font-bold mb-4">Search for Games</h2>
-        <form onSubmit={handleSearch} className="mb-4">
+        <form onSubmit={handleSubmit} className="mb-4">
           <div className="flex flex-col gap-2">
             <div className="flex gap-2">
               <input
                 type="text"
                 name="gameSearch"
                 aria-label="Search for games"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={localSearchTerm}
+                onChange={(e) => setLocalSearchTerm(e.target.value)}
                 placeholder="Enter game name"
                 required
                 className="border p-2 rounded flex-grow"
@@ -339,23 +342,24 @@ const Games = () => {
     );
   };
 
-  const ImportGames = ({ 
-    bggUsername, 
-    setBggUsername, 
-    handleImportCollection, 
-    importLoading, 
-    error 
-  }) => {
+  const ImportGames = ({ handleImportCollection, importLoading, error }) => {
+    const [localBggUsername, setLocalBggUsername] = useState('');
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      handleImportCollection(e, localBggUsername);
+    };
+
     return (
       <div>
         <h2 className="text-2xl font-bold mb-4">Import BGG Collection</h2>
-        <form onSubmit={handleImportCollection} className="mb-4">
+        <form onSubmit={handleSubmit} className="mb-4">
           <input
             type="text"
             name="bggUsername"
             aria-label="BoardGameGeek username"
-            value={bggUsername}
-            onChange={(e) => setBggUsername(e.target.value)}
+            value={localBggUsername}
+            onChange={(e) => setLocalBggUsername(e.target.value)}
             placeholder="Enter BGG Username"
             required
             className="border p-2 rounded mr-2"
@@ -412,8 +416,6 @@ const Games = () => {
 
       {activeTab === 'search' && (
         <SearchGames 
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
           handleSearch={handleSearch}
           loading={loading}
           error={error}
@@ -430,8 +432,6 @@ const Games = () => {
 
       {activeTab === 'import' && (
         <ImportGames 
-          bggUsername={bggUsername}
-          setBggUsername={setBggUsername}
           handleImportCollection={handleImportCollection}
           importLoading={importLoading}
           error={error}
