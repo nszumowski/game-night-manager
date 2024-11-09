@@ -148,9 +148,8 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 
 ## TODO
 
-- [ ] **Fix routing 404 direct page issues**
 - [ ] Fix - Menu update when logged in/out
-- [ ] Fix - 500 error if game is not found in search
+- [ ] Turn game list into a Component to reuse on my games and friend profiles
 - [ ] Profile - Email update
 - [ ] Profile - Update/Forgot Password functionality
 - [ ] Emails for friend requests and game night invitations
@@ -163,9 +162,11 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] oAuth?
 - [ ] Develop mobile app versions (iOS/Android)
 - [ ] Add unit and integration tests
+- [x] Fix - 500 error if game is not found in search
 - [x] Get user game list
 - [x] Name update
 - [x] Move games list from Profile to Games page
 - [x] Implement friend management system (Add/Remove, Accept/Decline)
 - [x] Show error when wrong password or email is entered
+- [x] **Fix routing 404 direct page issues**
 - [x] **Get refresh token working**
