@@ -9,6 +9,8 @@ const Friends = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('friends');
+  const [searchError, setSearchError] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
 
   useEffect(() => {
     fetchFriends();
@@ -26,11 +28,28 @@ const Friends = () => {
 
   const handleSearch = async (e, email) => {
     e.preventDefault();
+    setSearchError('');
+    setHasSearched(true);
     try {
       const response = await api.get(`/friends/search?email=${email}`);
-      setSearchResults(response.data);
+      console.log('Search response:', response.data);
+
+      if (!response.data || response.data.length === 0) {
+        setSearchError('No user found with that email address.');
+        setSearchResults([]);
+      } else {
+        setSearchResults(response.data);
+      }
     } catch (error) {
-      setError('Error searching users');
+      console.error('Search error:', error);
+      if (error.response?.status === 401) {
+        setSearchError('Please log in to search for friends.');
+      } else if (error.response?.status === 404) {
+        setSearchError('No user found with that email address.');
+      } else {
+        setSearchError('An error occurred while searching. Please try again.');
+      }
+      setSearchResults([]);
     }
   };
 
@@ -99,13 +118,15 @@ const Friends = () => {
     );
   };
 
-  const SearchFriends = ({ handleSearch, searchResults, sendFriendRequest }) => {
+  const SearchFriends = ({ handleSearch, searchResults, sendFriendRequest, error, hasSearched }) => {
     const [localSearchEmail, setLocalSearchEmail] = useState('');
 
     const handleSubmit = (e) => {
       e.preventDefault();
       handleSearch(e, localSearchEmail);
     };
+
+    console.log('SearchFriends render:', { searchResults, error, hasSearched });
 
     return (
       <div>
@@ -119,12 +140,24 @@ const Friends = () => {
             onChange={(e) => setLocalSearchEmail(e.target.value)}
             placeholder="Search by email"
             className="border p-2 rounded mr-2"
+            required
           />
-          <button type="submit" className="bg-blue-500 text-white p-2 rounded" aria-label="Search for friends by email">
+          <button 
+            type="submit"
+            className="bg-blue-500 text-white p-2 rounded"
+            aria-label="Search for friends by email"
+          >
             Search
           </button>
         </form>
-        {searchResults.length > 0 && (
+        
+        {error && (
+          <div className="text-red-600 p-4 bg-red-50 rounded mb-4 border border-red-100">
+            {error}
+          </div>
+        )}
+        
+        {searchResults && searchResults.length > 0 ? (
           <ul className="border rounded divide-y">
             {searchResults.map(user => (
               <li key={user._id} className="p-3 flex justify-between items-center">
@@ -135,13 +168,17 @@ const Friends = () => {
                 <button
                   onClick={() => sendFriendRequest(user._id)}
                   aria-label={`Send friend request to ${user.name}`}
-                  className="bg-green-500 text-white px-3 py-1 rounded"
+                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
                 >
                   Add Friend
                 </button>
               </li>
             ))}
           </ul>
+        ) : hasSearched && !error && (
+          <div className="text-gray-600 p-4 bg-gray-50 rounded">
+            No users found with that email address.
+          </div>
         )}
       </div>
     );
@@ -223,6 +260,8 @@ const Friends = () => {
           handleSearch={handleSearch}
           searchResults={searchResults}
           sendFriendRequest={sendFriendRequest}
+          error={searchError}
+          hasSearched={hasSearched}
         />
       )}
 
