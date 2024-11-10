@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../utils/api';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 
 const Profile = () => {
   const {userId} = useParams();
@@ -223,9 +224,24 @@ const Profile = () => {
           </form>
         ) : (
           <div className="flex flex-col gap-2">
-            <p className="text-gray-700">Name: {user?.name || 'Not available'}</p>
-            <p className="text-gray-700">Email: {user?.email || 'Not available'}</p>
-            <p className="text-gray-700">BoardGameGeek Username: {user?.bggUsername || 'Not set'}</p>
+            <p className="text-gray-700"><strong>Name:</strong> {user?.name || 'Not available'}</p>
+            <p className="text-gray-700"><strong>Email:</strong> {user?.email || 'Not available'}</p>
+            <p className="text-gray-700">
+              <strong>BoardGameGeek Username:</strong> {' '}
+              {user?.bggUsername ? (
+                <a 
+                  href={`https://boardgamegeek.com/user/${user.bggUsername}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1"
+                >
+                  {user.bggUsername}
+                  <FaExternalLinkAlt className="text-xs" aria-label="Opens in new tab" />
+                </a>
+              ) : (
+                'Not set'
+              )}
+            </p>
             {isOwnProfile && (
               <button
                 onClick={() => setIsEditing(true)}
