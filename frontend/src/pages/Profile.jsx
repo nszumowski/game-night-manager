@@ -38,8 +38,22 @@ const Profile = () => {
         response = await api.get('/users/profile');
         setIsOwnProfile(true);
       }
-      setUser(response.data);
-      setUserGames(response.data.ownedGames || []);
+
+      const userData = response.data.user || response.data;
+      
+      setUser({
+        _id: userData._id,
+        name: userData.name,
+        email: userData.email,
+        date: userData.date || userData.createdAt,
+        ownedGames: userData.ownedGames || []
+      });
+      
+      setUserGames(userData.ownedGames || []);
+      
+      console.log('Profile response:', response.data);
+      console.log('Processed user data:', userData);
+      
     } catch (error) {
       console.error('There was an error fetching the user profile!', error);
     }
@@ -93,7 +107,7 @@ const Profile = () => {
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">
-          {isOwnProfile ? 'My Profile' : `${user.name}'s Profile`}
+          {isOwnProfile ? 'My Profile' : `${user?.name}'s Profile`}
         </h1>
         {!isOwnProfile && isFriend && (
           <button
@@ -142,7 +156,7 @@ const Profile = () => {
           </form>
         ) : (
           <div className="flex gap-2 items-center">
-            <p className="text-gray-700">Name: {user.name}</p>
+            <p className="text-gray-700">Name: {user?.name || 'Not available'}</p>
             {isOwnProfile && (
               <button
                 onClick={() => setIsEditing(true)}
@@ -156,8 +170,10 @@ const Profile = () => {
         )}
       </div>
 
-      <p className="text-gray-700">Email: {user.email}</p>
-      <p className="text-gray-700">Member since: {new Date(user.date).toLocaleDateString()}</p>
+      <p className="text-gray-700">Email: {user?.email || 'Not available'}</p>
+      <p className="text-gray-700">
+        Member since: {user?.date ? new Date(user.date).toLocaleDateString() : 'Not available'}
+      </p>
       
       <div className="mt-8">
         <h2 className="text-2xl font-bold mb-4">
