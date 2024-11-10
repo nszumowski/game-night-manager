@@ -6,7 +6,11 @@ const Profile = () => {
   const {userId} = useParams();
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [newName, setNewName] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    bggUsername: ''
+  });
   const [error, setError] = useState('');
   const [isOwnProfile, setIsOwnProfile] = useState(true);
   const [isFriend, setIsFriend] = useState(false);
@@ -22,7 +26,11 @@ const Profile = () => {
 
   useEffect(() => {
     if (user) {
-      setNewName(user.name);
+      setFormData({
+        name: user.name || '',
+        email: user.email || '',
+        bggUsername: user.bggUsername || ''
+      });
     }
   }, [user]);
 
@@ -45,6 +53,7 @@ const Profile = () => {
         _id: userData._id,
         name: userData.name,
         email: userData.email,
+        bggUsername: userData.bggUsername,
         date: userData.date || userData.createdAt,
         ownedGames: userData.ownedGames || []
       });
@@ -68,25 +77,38 @@ const Profile = () => {
     }
   };
 
-  const handleUpdateName = async (e) => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setError('');
 
-    const sanitizedName = newName.trim();
-    if (sanitizedName.length < 1 || sanitizedName.length > 50) {
+    const sanitizedData = {
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      bggUsername: formData.bggUsername.trim()
+    };
+
+    if (sanitizedData.name.length < 1 || sanitizedData.name.length > 50) {
       setError('Name must be between 1 and 50 characters');
       return;
     }
 
     try {
-      const response = await api.put('/users/update-profile', { name: sanitizedName });
+      const response = await api.put('/users/update-profile', sanitizedData);
       if (response.data.success) {
         setUser(response.data.user);
         setIsEditing(false);
       }
     } catch (error) {
-      console.error('Error updating name:', error);
-      setError(error.response?.data?.message || 'Failed to update name.');
+      console.error('Error updating profile:', error);
+      setError(error.response?.data?.message || 'Failed to update profile.');
     }
   };
 
@@ -122,55 +144,101 @@ const Profile = () => {
       
       <div className="mb-4">
         {isOwnProfile && isEditing ? (
-          <form onSubmit={handleUpdateName} className="flex flex-col gap-2">
+          <form onSubmit={handleUpdateProfile} className="flex flex-col gap-4">
             <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                Name
+              </label>
               <input
+                id="name"
                 name="name"
                 type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                className="border p-2 rounded"
+                value={formData.name}
+                onChange={handleInputChange}
+                className="border p-2 rounded w-full"
                 required
                 maxLength={50}
                 aria-label="Edit name"
               />
-              {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
             </div>
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className="border p-2 rounded w-full"
+                required
+                aria-label="Edit email"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="bggUsername" className="block text-sm font-medium text-gray-700 mb-1">
+                BoardGameGeek Username
+              </label>
+              <input
+                id="bggUsername"
+                name="bggUsername"
+                type="text"
+                value={formData.bggUsername}
+                onChange={handleInputChange}
+                className="border p-2 rounded w-full"
+                aria-label="Edit BoardGameGeek username"
+              />
+            </div>
+
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+
             <div className="flex gap-2">
-              <button type="submit" className="bg-green-500 text-white p-2 rounded" aria-label="Save name">
-                Save
+              <button 
+                type="submit" 
+                className="bg-green-500 text-white p-2 rounded hover:bg-green-600" 
+                aria-label="Save profile changes"
+              >
+                Save Changes
               </button>
               <button
                 type="button"
                 onClick={() => {
                   setIsEditing(false);
-                  setNewName(user.name);
+                  setFormData({
+                    name: user.name || '',
+                    email: user.email || '',
+                    bggUsername: user.bggUsername || ''
+                  });
                   setError('');
                 }}
-                className="bg-gray-500 text-white p-2 rounded"
-                aria-label="Cancel name edit"
+                className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600"
+                aria-label="Cancel profile edit"
               >
                 Cancel
               </button>
             </div>
           </form>
         ) : (
-          <div className="flex gap-2 items-center">
+          <div className="flex flex-col gap-2">
             <p className="text-gray-700">Name: {user?.name || 'Not available'}</p>
+            <p className="text-gray-700">Email: {user?.email || 'Not available'}</p>
+            <p className="text-gray-700">BoardGameGeek Username: {user?.bggUsername || 'Not set'}</p>
             {isOwnProfile && (
               <button
                 onClick={() => setIsEditing(true)}
-                className="bg-blue-500 text-white p-2 rounded text-sm"
-                aria-label="Edit name"
+                className="bg-blue-500 text-white p-2 rounded text-sm w-fit hover:bg-blue-600"
+                aria-label="Edit profile"
               >
-                Edit
+                Edit Profile
               </button>
             )}
           </div>
         )}
       </div>
 
-      <p className="text-gray-700">Email: {user?.email || 'Not available'}</p>
       <p className="text-gray-700">
         Member since: {user?.date ? new Date(user.date).toLocaleDateString() : 'Not available'}
       </p>

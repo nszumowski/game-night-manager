@@ -89,6 +89,7 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), async (
         id: user._id,
         name: user.name,
         email: user.email,
+        bggUsername: user.bggUsername,
         date: user.date
       },
       ownedGames: user.ownedGames
@@ -101,10 +102,11 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), async (
 // Update profile route
 router.put('/update-profile', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    let { name } = req.body;
+    let { name, bggUsername } = req.body;
 
     // Sanitize the name input
     name = xss(name.trim());
+    bggUsername = xss(bggUsername.trim());
 
     // Validate name length after sanitization
     if (name.length < 1 || name.length > 50) {
@@ -120,6 +122,7 @@ router.put('/update-profile', passport.authenticate('jwt', { session: false }), 
     }
 
     user.name = name;
+    user.bggUsername = bggUsername;
     await user.save();
 
     res.json({ success: true, user });
