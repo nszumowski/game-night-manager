@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import { FaUser } from 'react-icons/fa';
 
 const Friends = () => {
   const [friends, setFriends] = useState([]);
@@ -97,9 +98,22 @@ const Friends = () => {
           <ul className="border rounded divide-y">
             {friends.map(friend => (
               <li key={friend._id} className="p-3 flex justify-between items-center">
-                <Link to={`/profile/${friend._id}`} className="hover:text-blue-500">
-                  <p className="font-medium">{friend.name}</p>
-                  <p className="text-gray-600">{friend.email}</p>
+                <Link to={`/profile/${friend._id}`} className="flex items-center gap-3 hover:text-blue-500">
+                  {friend.profileImage ? (
+                    <img
+                      src={friend.profileImage}
+                      alt={`${friend.name}'s profile`}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                      <FaUser className="text-gray-400 text-xl" />
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-medium">{friend.name}</p>
+                    <p className="text-gray-600">{friend.email}</p>
+                  </div>
                 </Link>
                 <button
                   onClick={() => removeFriend(friend._id)}
@@ -165,9 +179,22 @@ const Friends = () => {
           <ul className="border rounded divide-y">
             {searchResults.map(user => (
               <li key={user._id} className="p-3 flex justify-between items-center">
-                <div>
-                  <p className="font-medium">{user.name}</p>
-                  <p className="text-gray-600">{user.email}</p>
+                <div className="flex items-center gap-3">
+                  {user.profileImage ? (
+                    <img
+                      src={user.profileImage}
+                      alt={`${user.name}'s profile`}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                      <FaUser className="text-gray-400 text-xl" />
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-medium">{user.name}</p>
+                    <p className="text-gray-600">{user.email}</p>
+                  </div>
                 </div>
                 {isAlreadyFriend(user._id) ? (
                   <span className="text-gray-500 px-3 py-1">

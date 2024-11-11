@@ -40,6 +40,9 @@ app.use('/api/friends', friends);
 // Serve static files from the React frontend app
 app.use(express.static(path.join(__dirname, '../frontend/build')));
 
+// Serve static files from the uploads directory
+app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads', 'profiles')));
+
 // Anything that doesn't match the above, send back index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/build/index.html'));

@@ -8,8 +8,37 @@ const User = require('../models/User');
 const Game = require('../models/Game');
 const passport = require('passport');
 const xss = require('xss');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 const router = express.Router();
+
+// Add multer configuration at the top of the file
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/profiles/') // Make sure this directory exists
+  },
+  filename: function (req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`)
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Not an image! Please upload an image.'), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: fileFilter
+});
 
 // Register route
 router.post('/register', async (req, res) => {
@@ -90,7 +119,8 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), async (
         name: user.name,
         email: user.email,
         bggUsername: user.bggUsername,
-        date: user.date
+        date: user.date,
+        profileImage: user.profileImage
       },
       ownedGames: user.ownedGames
     });
@@ -100,35 +130,99 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), async (
 });
 
 // Update profile route
-router.put('/update-profile', passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.put('/update-profile', passport.authenticate('jwt', { session: false }), upload.single('profileImage'), async (req, res) => {
   try {
-    let { name, bggUsername } = req.body;
+    let { name, bggUsername, removeImage } = req.body;
 
-    // Sanitize the name input
-    name = xss(name.trim());
-    bggUsername = xss(bggUsername.trim());
-
-    // Validate name length after sanitization
-    if (name.length < 1 || name.length > 50) {
-      return res.status(400).json({
-        success: false,
-        message: 'Name must be between 1 and 50 characters'
-      });
-    }
-
+    // If we're only removing the image, use the existing user data
     const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    user.name = name;
-    user.bggUsername = bggUsername;
+    // Handle image removal
+    if (removeImage === 'true' && user.profileImage) {
+      try {
+        const oldImagePath = path.join(__dirname, '..', 'uploads', 'profiles', user.profileImage);
+        console.log('Attempting to delete image at:', oldImagePath);
+
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+          console.log('Successfully deleted old image');
+        }
+
+        user.profileImage = null;
+        await user.save();
+
+        return res.json({
+          success: true,
+          user: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            bggUsername: user.bggUsername,
+            profileImage: null,
+            date: user.date
+          }
+        });
+      } catch (fileError) {
+        console.error('Error deleting image file:', fileError);
+        return res.status(500).json({
+          success: false,
+          message: 'Error removing profile image',
+          error: fileError.message
+        });
+      }
+    }
+
+    // Regular profile update logic...
+    if (name) {
+      name = xss(name.trim());
+      if (name.length < 1 || name.length > 50) {
+        return res.status(400).json({
+          success: false,
+          message: 'Name must be between 1 and 50 characters'
+        });
+      }
+      user.name = name;
+    }
+
+    if (bggUsername) {
+      user.bggUsername = xss(bggUsername.trim());
+    }
+
+    // Handle profile image update
+    if (req.file) {
+      // Handle new image upload
+      if (user.profileImage) {
+        const oldImagePath = path.join(__dirname, '..', 'uploads', 'profiles', user.profileImage);
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
+      }
+      user.profileImage = req.file.filename;
+    }
+
     await user.save();
 
-    res.json({ success: true, user });
+    res.json({
+      success: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        bggUsername: user.bggUsername,
+        profileImage: user.profileImage,
+        date: user.date
+      }
+    });
   } catch (error) {
-    console.error('Error updating user profile:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error('Error in update-profile route:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
   }
 });
 
@@ -248,14 +342,17 @@ router.get('/verify-token', passport.authenticate('jwt', { session: false }), (r
 router.get('/profile/:userId', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
     const user = await User.findById(req.params.userId)
-      .select('-password')  // Exclude password from the response
+      .select('-password')
       .populate('ownedGames');
 
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    res.json(user);
+    res.json({
+      ...user.toObject(),
+      profileImage: user.profileImage
+    });
   } catch (error) {
     console.error('Error fetching user profile:', error);
     res.status(500).json({ success: false, message: 'Server error' });

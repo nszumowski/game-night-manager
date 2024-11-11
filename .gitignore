@@ -68,3 +68,6 @@ coverage/
 
 # Vite
 .vite
+
+uploads/*
+!uploads/.gitkeep

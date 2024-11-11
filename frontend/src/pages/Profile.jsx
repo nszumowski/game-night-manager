@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../utils/api';
-import { FaExternalLinkAlt } from 'react-icons/fa';
+import { FaExternalLinkAlt, FaUser, FaCamera, FaTimes } from 'react-icons/fa';
 
 const Profile = () => {
   const {userId} = useParams();
@@ -17,6 +17,10 @@ const Profile = () => {
   const [isFriend, setIsFriend] = useState(false);
   const [userGames, setUserGames] = useState([]);
   const [myGames, setMyGames] = useState([]);
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const API_URL = process.env.APP_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     fetchUser();
@@ -55,6 +59,7 @@ const Profile = () => {
         name: userData.name,
         email: userData.email,
         bggUsername: userData.bggUsername,
+        profileImage: userData.profileImage,
         date: userData.date || userData.createdAt,
         ownedGames: userData.ownedGames || []
       });
@@ -86,26 +91,40 @@ const Profile = () => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setError('');
 
-    const sanitizedData = {
-      name: formData.name.trim(),
-      email: formData.email.trim(),
-      bggUsername: formData.bggUsername.trim()
-    };
-
-    if (sanitizedData.name.length < 1 || sanitizedData.name.length > 50) {
-      setError('Name must be between 1 and 50 characters');
-      return;
+    const form = new FormData();
+    form.append('name', formData.name.trim());
+    form.append('email', formData.email.trim());
+    form.append('bggUsername', formData.bggUsername.trim());
+    if (profileImage) {
+      form.append('profileImage', profileImage);
     }
 
     try {
-      const response = await api.put('/users/update-profile', sanitizedData);
+      const response = await api.put('/users/update-profile', form, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       if (response.data.success) {
-        setUser(response.data.user);
+        setUser(prevUser => ({
+          ...prevUser,
+          ...response.data.user,
+        }));
         setIsEditing(false);
+        setProfileImage(null);
+        setImagePreview(null);
       }
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -122,25 +141,100 @@ const Profile = () => {
     }
   };
 
+  const handleRemoveImage = async () => {
+    try {
+      setProfileImage(null);
+      setImagePreview(null);
+      
+      if (user.profileImage) {
+        const form = new FormData();
+        form.append('removeImage', 'true');
+        
+        const response = await api.put('/users/update-profile', form, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        
+        if (response.data.success) {
+          setUser(prevUser => ({
+            ...prevUser,
+            profileImage: null
+          }));
+        } else {
+          throw new Error(response.data.message || 'Failed to remove image');
+        }
+      }
+    } catch (error) {
+      console.error('Error removing profile image:', error);
+      setError(error.response?.data?.message || 'Failed to remove profile image.');
+    }
+  };
+
   if (!user) {
     return <div className="container mx-auto p-4">Loading...</div>;
   }
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">
-          {isOwnProfile ? 'My Profile' : `${user?.name}'s Profile`}
-        </h1>
-        {!isOwnProfile && isFriend && (
-          <button
-            onClick={removeFriend}
-            aria-label="Remove friend"
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-colors duration-200"
-          >
-            Remove Friend
-          </button>
-        )}
+      <div className="flex items-center gap-4 mb-6">
+        <div className="relative">
+          {user?.profileImage || imagePreview ? (
+            <img
+              src={imagePreview || `${API_URL}/uploads/profiles/${user.profileImage}`}
+              alt={`${user.name}'s profile`}
+              className="w-24 h-24 rounded-full object-cover"
+              onError={(e) => {
+                console.error('Image failed to load:', e.target.src);
+                e.target.onerror = null;
+                e.target.src = '/placeholder-game.png';
+              }}
+            />
+          ) : (
+            <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
+              <FaUser className="text-gray-400 text-3xl" />
+            </div>
+          )}
+          {isOwnProfile && isEditing && (
+            <div className="absolute bottom-0 right-0 flex gap-2">
+              {(imagePreview || user?.profileImage) && (
+                <button
+                  onClick={handleRemoveImage}
+                  className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                  aria-label="Remove profile image"
+                >
+                  <FaTimes className="text-sm" />
+                </button>
+              )}
+              <label htmlFor="profileImage" className="cursor-pointer">
+                <div className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600">
+                  <FaCamera className="text-sm" />
+                </div>
+                <input
+                  type="file"
+                  id="profileImage"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          )}
+        </div>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold">
+            {isOwnProfile ? 'My Profile' : `${user?.name}'s Profile`}
+          </h1>
+          {!isOwnProfile && isFriend && (
+            <button
+              onClick={removeFriend}
+              aria-label="Remove friend"
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-colors duration-200"
+            >
+              Remove Friend
+            </button>
+          )}
+        </div>
       </div>
       
       <div className="mb-4">
