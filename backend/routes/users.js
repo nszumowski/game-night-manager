@@ -11,25 +11,28 @@ const xss = require('xss');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const sharp = require('sharp');
+const fsPromises = require('fs').promises;
 
 const router = express.Router();
 
 // Add multer configuration at the top of the file
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/profiles/') // Make sure this directory exists
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/profiles/');
   },
-  filename: function (req, file, cb) {
-    cb(null, `${Date.now()}-${file.originalname}`)
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
   }
 });
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image/')) {
-    cb(null, true);
-  } else {
-    cb(new Error('Not an image! Please upload an image.'), false);
+  // Accept images only
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+    return cb(new Error('Only image files are allowed!'), false);
   }
+  cb(null, true);
 };
 
 const upload = multer({
@@ -39,6 +42,47 @@ const upload = multer({
   },
   fileFilter: fileFilter
 });
+
+// Create a middleware function for image processing
+const processImage = async (req, res, next) => {
+  if (!req.file) return next();
+
+  try {
+    // Read the image metadata
+    const metadata = await sharp(req.file.path).metadata();
+
+    // Calculate dimensions maintaining aspect ratio
+    let width = 300; // Default target width
+    let height = 300; // Default target height
+
+    // Ensure smallest dimension is at least 100px
+    if (metadata.width < metadata.height) {
+      width = 100;
+      height = Math.round((metadata.height / metadata.width) * 100);
+    } else {
+      height = 100;
+      width = Math.round((metadata.width / metadata.height) * 100);
+    }
+
+    // Process the image
+    await sharp(req.file.path)
+      .resize(width, height, {
+        fit: 'cover',
+        position: 'center'
+      })
+      .jpeg({ quality: 80, progressive: true })
+      .toFile(`${req.file.path}-processed`);
+
+    // Replace original file with processed one
+    await fsPromises.unlink(req.file.path);
+    await fsPromises.rename(`${req.file.path}-processed`, req.file.path);
+
+    next();
+  } catch (error) {
+    console.error('Error processing image:', error);
+    next(error);
+  }
+};
 
 // Register route
 router.post('/register', async (req, res) => {
@@ -130,7 +174,7 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), async (
 });
 
 // Update profile route
-router.put('/update-profile', passport.authenticate('jwt', { session: false }), upload.single('profileImage'), async (req, res) => {
+router.put('/update-profile', passport.authenticate('jwt', { session: false }), upload.single('profileImage'), processImage, async (req, res) => {
   try {
     let { name, bggUsername, removeImage } = req.body;
 

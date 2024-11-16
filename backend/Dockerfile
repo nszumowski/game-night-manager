@@ -1,11 +1,13 @@
 # Use an official Node.js runtime as a parent image
-FROM node:16
+FROM node:18
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Create uploads directory structure
-RUN mkdir -p uploads/profiles && chmod 777 uploads/profiles
+# Install Sharp dependencies
+RUN apt-get update && apt-get install -y \
+    libvips-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Add build arguments
 ARG MONGO_URI
@@ -19,19 +21,22 @@ ENV JWT_SECRET=${JWT_SECRET}
 ENV NODE_ENV=${NODE_ENV}
 ENV PORT=${PORT}
 
-# Copy package.json and package-lock.json from the backend directory on the host
+# Copy package files first
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies with platform-specific Sharp
+# RUN npm install --platform=linux --arch=x64 sharp
+RUN npm install --os=linux --cpu=x64 sharp
+RUN npm install --include=optional sharp
+RUN npm rebuild sharp --verbose
 
-# Copy the rest of the application code from the backend directory on the host
+# Copy the rest of the application code
 COPY . .
 
 # Expose the port the app runs on
 EXPOSE 5000
 
-# Add this after WORKDIR
+# Add entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
