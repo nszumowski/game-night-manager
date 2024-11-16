@@ -37,15 +37,25 @@ require('./config/passport')(passport);
 app.use('/api/users', users);
 app.use('/api/games', games);
 app.use('/api/friends', friends);
-// Serve static files from the React frontend app
+
+// Add this before the static file middleware
+app.use('/uploads/profiles', (req, res, next) => {
+  console.log('Profile image requested:', req.url);
+  console.log('Full path:', path.join(__dirname, 'uploads', 'profiles', req.url));
+  next();
+}, express.static(path.join(__dirname, 'uploads', 'profiles')));
+
+// Serve the React app static files (if needed)
 app.use(express.static(path.join(__dirname, '../frontend/build')));
 
-// Serve static files from the uploads directory
-app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads', 'profiles')));
-
-// Anything that doesn't match the above, send back index.html
+// Catch-all route should be last
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
+  // Only send index.html for non-API and non-static requests
+  if (!req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
+    res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
+  } else {
+    res.status(404).send('Not found');
+  }
 });
 
 // Connect to MongoDB

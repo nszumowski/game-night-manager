@@ -10,7 +10,7 @@ router.get('/search', passport.authenticate('jwt', { session: false }), async (r
     const users = await User.find({
       email: { $regex: email, $options: 'i' },
       _id: { $ne: req.user.id } // Exclude current user
-    }).select('name email');
+    }).select('name email profileImage');
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: 'Error searching users' });
@@ -102,15 +102,18 @@ router.post('/remove', passport.authenticate('jwt', { session: false }), async (
 router.get('/list', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
     const user = await User.findById(req.user.id)
-      .populate('friends', 'name email')
-      .populate('friendRequests.from', 'name email');
+      .populate('friends', 'name email profileImage')
+      .populate({
+        path: 'friendRequests.from',
+        select: 'name email profileImage'
+      });
 
     res.json({
       friends: user.friends,
       friendRequests: user.friendRequests
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching friends' });
+    res.status(500).json({ message: 'Error fetching friends list' });
   }
 });
 

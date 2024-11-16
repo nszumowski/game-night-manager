@@ -350,8 +350,16 @@ router.get('/profile/:userId', passport.authenticate('jwt', { session: false }),
     }
 
     res.json({
-      ...user.toObject(),
-      profileImage: user.profileImage
+      success: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        bggUsername: user.bggUsername,
+        profileImage: user.profileImage,
+        date: user.date,
+        ownedGames: user.ownedGames
+      }
     });
   } catch (error) {
     console.error('Error fetching user profile:', error);

@@ -4,6 +4,9 @@ FROM node:16
 # Set the working directory inside the container
 WORKDIR /usr/src/app
 
+# Create uploads directory structure
+RUN mkdir -p uploads/profiles && chmod 777 uploads/profiles
+
 # Add build arguments
 ARG MONGO_URI
 ARG JWT_SECRET
@@ -28,5 +31,8 @@ COPY . .
 # Expose the port the app runs on
 EXPOSE 5000
 
-# Define the command to run the app
+# Add this after WORKDIR
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["node", "server.js"]
