@@ -12,6 +12,9 @@ const Friends = () => {
   const [activeTab, setActiveTab] = useState('friends');
   const [searchError, setSearchError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const API_URL = process.env.APP_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     fetchFriends();
@@ -101,9 +104,16 @@ const Friends = () => {
                 <Link to={`/profile/${friend._id}`} className="flex items-center gap-3 hover:text-blue-500">
                   {friend.profileImage ? (
                     <img
-                      src={friend.profileImage}
+                    // src={friend.profileImage}
+                      // src={`${API_URL}/uploads/profiles/${friend.profileImage}`}
+                      src={imagePreview || `${API_URL}/uploads/profiles/${friend.profileImage}`}
                       alt={`${friend.name}'s profile`}
                       className="w-12 h-12 rounded-full object-cover"
+                      onError={(e) => {
+                        console.error('Image failed to load:', e.target.src);
+                        e.target.onerror = null;
+                        e.target.src = '';
+                      }}
                     />
                   ) : (
                     <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
@@ -182,9 +192,16 @@ const Friends = () => {
                 <div className="flex items-center gap-3">
                   {user.profileImage ? (
                     <img
-                      src={user.profileImage}
+                      // src={user.profileImage}
+                      // src={`${API_URL}/uploads/profiles/${user.profileImage}`}
+                      src={imagePreview || `${API_URL}/uploads/profiles/${user.profileImage}`}
                       alt={`${user.name}'s profile`}
                       className="w-12 h-12 rounded-full object-cover"
+                      onError={(e) => {
+                        console.error('Image failed to load:', e.target.src);
+                        e.target.onerror = null;
+                        e.target.src = '';
+                      }}
                     />
                   ) : (
                     <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
