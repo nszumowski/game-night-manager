@@ -7,6 +7,7 @@ const users = require('./routes/users');
 const games = require('./routes/games');
 const friends = require('./routes/friends');
 const path = require('path');
+const compression = require('compression');
 
 require('dotenv').config(); // Load .env file
 
@@ -23,6 +24,7 @@ require('./models/User');
 require('./models/Game');
 
 const app = express();
+app.use(compression());
 
 // Middleware
 app.use(cors());

@@ -25,10 +25,10 @@ ENV PORT=${PORT}
 COPY package*.json ./
 
 # Install dependencies with platform-specific Sharp
-# RUN npm install --platform=linux --arch=x64 sharp
 RUN npm install --os=linux --cpu=x64 sharp
 RUN npm install --include=optional sharp
 RUN npm rebuild sharp --verbose
+RUN npm install compression
 
 # Copy the rest of the application code
 COPY . .
