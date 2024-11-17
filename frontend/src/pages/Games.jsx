@@ -80,9 +80,12 @@ const Games = () => {
   const fetchOwnedGames = async () => {
     try {
       const response = await api.get('/users/profile');
-      // Make sure we're getting the populated game objects
       console.log('Fetched owned games:', response.data.ownedGames);
-      setOwnedGames(response.data.ownedGames || []);
+      setOwnedGames(
+        (response.data.ownedGames || []).sort((a, b) => 
+          a.title.localeCompare(b.title)
+        )
+      );
     } catch (error) {
       console.error('Error fetching owned games:', error);
     }

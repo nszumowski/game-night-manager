@@ -64,7 +64,11 @@ const Profile = () => {
         ownedGames: userData.ownedGames || []
       });
       
-      setUserGames(userData.ownedGames || []);
+      setUserGames(
+        (userData.ownedGames || []).sort((a, b) => 
+          a.title.localeCompare(b.title)
+        )
+      );
       
       console.log('Profile response:', response.data);
       console.log('Processed user data:', userData);
