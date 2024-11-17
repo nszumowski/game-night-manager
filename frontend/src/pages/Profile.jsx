@@ -389,7 +389,14 @@ const Profile = () => {
                           </span>
                         )}
                         {game.bestWith && (
-                          <span className="text-green-600">{game.bestWith}</span>
+                          <span className="text-green-600 mr-3">{game.bestWith}</span>
+                        )}
+                        {(game.minPlaytime || game.maxPlaytime) && (
+                          <span className="mr-3">
+                            {game.minPlaytime === game.maxPlaytime 
+                              ? `${game.minPlaytime} minutes`
+                              : `${game.minPlaytime}-${game.maxPlaytime} minutes`}
+                          </span>
                         )}
                       </div>
                     </div>

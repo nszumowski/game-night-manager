@@ -97,7 +97,9 @@ const Games = () => {
         maxPlayers: game.maxPlayers,
         bestWith: game.bestWith,
         year: game.year,
-        image: game.image
+        image: game.image,
+        minPlaytime: game.minPlaytime,
+        maxPlaytime: game.maxPlaytime
       });
       if (response.data.success) {
         setOwnedGames(prev => [...prev, {
@@ -107,7 +109,9 @@ const Games = () => {
           maxPlayers: game.maxPlayers,
           bestWith: game.bestWith,
           year: game.year,
-          image: game.image
+          image: game.image,
+          minPlaytime: game.minPlaytime,
+          maxPlaytime: game.maxPlaytime
         }]);
         setAddedGames(prev => ({ ...prev, [game.id]: true }));
         setTimeout(() => {
@@ -192,7 +196,14 @@ const Games = () => {
                         </span>
                       )}
                       {game.bestWith && (
-                        <span className="text-green-600">{game.bestWith}</span>
+                        <span className="text-green-600 mr-3">{game.bestWith}</span>
+                      )}
+                      {(game.minPlaytime || game.maxPlaytime) && (
+                        <span className="mr-3">
+                          {game.minPlaytime === game.maxPlaytime 
+                            ? `${game.minPlaytime} minutes`
+                            : `${game.minPlaytime}-${game.maxPlaytime} minutes`}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -289,7 +300,14 @@ const Games = () => {
                       </span>
                     )}
                     {game.bestWith && (
-                      <span className="text-green-600">{game.bestWith}</span>
+                      <span className="text-green-600 mr-3">{game.bestWith}</span>
+                    )}
+                    {(game.minPlaytime || game.maxPlaytime) && (
+                      <span className="mr-3">
+                        {game.minPlaytime === game.maxPlaytime 
+                          ? `${game.minPlaytime} minutes`
+                          : `${game.minPlaytime}-${game.maxPlaytime} minutes`}
+                      </span>
                     )}
                   </div>
                   <p className="text-gray-700">{game.description}</p>

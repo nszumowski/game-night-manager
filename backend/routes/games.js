@@ -96,6 +96,10 @@ router.get('/details', async (req, res) => {
       }
     }
 
+    // Get playtime
+    const minPlaytime = item.minplaytime ? parseInt(item.minplaytime[0].$.value) : null;
+    const maxPlaytime = item.maxplaytime ? parseInt(item.maxplaytime[0].$.value) : null;
+
     const gameDetails = {
       id,
       title,
@@ -104,6 +108,8 @@ router.get('/details', async (req, res) => {
       minPlayers,
       maxPlayers,
       bestWith,
+      minPlaytime,
+      maxPlaytime,
       rawData: response.data
     };
 
@@ -148,6 +154,8 @@ router.get('/collection', async (req, res) => {
       const maxPlayers = gameItem.maxplayers ? parseInt(gameItem.maxplayers[0].$.value) : null;
       const image = gameItem.thumbnail ? gameItem.thumbnail[0] : null;
       const year = gameItem.yearpublished ? gameItem.yearpublished[0].$.value : null;
+      const minPlaytime = gameItem.minplaytime ? parseInt(gameItem.minplaytime[0].$.value) : null;
+      const maxPlaytime = gameItem.maxplaytime ? parseInt(gameItem.maxplaytime[0].$.value) : null;
 
       let bestWith = null;
       if (gameItem.poll) {
@@ -171,7 +179,9 @@ router.get('/collection', async (req, res) => {
         image,
         minPlayers,
         maxPlayers,
-        bestWith
+        bestWith,
+        minPlaytime,
+        maxPlaytime
       };
     }));
 

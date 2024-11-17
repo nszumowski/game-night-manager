@@ -155,7 +155,7 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] Update stored game data from BGG API if changed during a search or import
 - [ ] Profile - Update/Forgot Password functionality
 - [ ] Emails for friend requests and game night invitations
-- [ ] Games - Pull number of players and playtime from BGG API
+- [ ] Games - Sort games in owned list alphabetically
 - [ ] Games - Trim amount of text on game cards in search results
 - [ ] Games - Add link to BGG page
 - [ ] Game Night - Add game night creation and management features
@@ -165,6 +165,7 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] Invitiations instead of open registration initially?
 - [ ] Develop mobile app versions (iOS/Android)
 - [ ] Add unit and integration tests
+- [x] Games - Pull number of players and playtime from BGG API
 - [x] Fix - Menu update when logged in/out
 - [x] Profile - BGG name field
 - [x] Profile - Update button should allow editing for all profile fields, not just email
