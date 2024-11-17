@@ -149,14 +149,10 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 ## TODO
 
 - [ ] **Implement some form of caching for api queries - store search results even if not in database?**
-- [ ] **Implement image caching - clear images viewed less than a month ago? unless a new version is in search or import? store locally?**
+- [ ] **Implement image caching - clear game images viewed less than a month ago? unless a new version is in search or import? store locally?**
 - [ ] Move common components to a shared library
 - [ ] Turn game list into a Component to reuse on my games and friend profiles
 - [ ] Update stored game data from BGG API if changed during a search or import
-- [ ] Fix - Menu update when logged in/out
-- [ ] Profile - User image upload and display in profiles and user search
-- [ ] Profile - BGG name field
-- [ ] Profile - Update button should allow editing for all profile fields, not just email
 - [ ] Profile - Update/Forgot Password functionality
 - [ ] Emails for friend requests and game night invitations
 - [ ] Games - Pull number of players and playtime from BGG API
@@ -169,6 +165,10 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] Invitiations instead of open registration initially?
 - [ ] Develop mobile app versions (iOS/Android)
 - [ ] Add unit and integration tests
+- [x] Fix - Menu update when logged in/out
+- [x] Profile - BGG name field
+- [x] Profile - Update button should allow editing for all profile fields, not just email
+- [x] Profile - User image upload and display in profiles and user search
 - [x] Buttons should have aria-labels
 - [x] Input fields should have aria-labels and names
 - [x] Lazy load images
