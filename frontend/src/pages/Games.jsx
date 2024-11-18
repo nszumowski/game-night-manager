@@ -209,6 +209,17 @@ const Games = () => {
                         </span>
                       )}
                     </div>
+                    <div className="text-gray-700">
+                      <a 
+                        href={`https://boardgamegeek.com/boardgame/${game.bggId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-700 mt-2 inline-block font-bold text-sm"
+                        aria-label={`Read more about ${game.title} on BoardGameGeek`}
+                      >
+                        Read more on BGG →
+                      </a>
+                    </div>
                   </div>
                 </div>
                 <button
