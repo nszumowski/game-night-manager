@@ -249,6 +249,23 @@ const Games = () => {
       handleSearch(localSearchTerm);
     };
 
+    // Updated helper function to decode HTML entities and trim description
+    const trimDescription = (description, wordLimit = 100) => {
+      if (!description) return '';
+      
+      // Create a temporary div to decode HTML entities
+      const decoder = document.createElement('div');
+      decoder.innerHTML = description;
+      let decodedText = decoder.textContent;
+      
+      // Replace multiple newlines/spaces with single space
+      decodedText = decodedText.replace(/\s+/g, ' ').trim();
+      
+      const words = decodedText.split(' ');
+      if (words.length <= wordLimit) return decodedText;
+      return words.slice(0, wordLimit).join(' ') + '...';
+    };
+
     return (
       <div>
         <h2 className="text-2xl font-bold mb-4">Search for Games</h2>
@@ -313,7 +330,18 @@ const Games = () => {
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-700">{game.description}</p>
+                  <div className="text-gray-700">
+                    <p>{trimDescription(game.description)}</p>
+                    <a 
+                      href={`https://boardgamegeek.com/boardgame/${game.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:text-blue-700 mt-2 inline-block font-bold text-sm"
+                      aria-label={`Read more about ${game.title} on BoardGameGeek`}
+                    >
+                      Read more on BGG →
+                    </a>
+                  </div>
                 </div>
               </div>
               <div className="flex mt-2">
