@@ -12,6 +12,7 @@ const Games = () => {
   const [ownedGames, setOwnedGames] = useState([]);
   const [importLoading, setImportLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('owned');
+  const [notification, setNotification] = useState({ message: '', type: '' });
 
   useEffect(() => {
     fetchOwnedGames();
@@ -91,6 +92,11 @@ const Games = () => {
     }
   };
 
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification({ message: '', type: '' }), 3000);
+  };
+
   const addToOwnedGames = async (game) => {
     try {
       const response = await api.post('/users/add-owned-game', {
@@ -123,7 +129,7 @@ const Games = () => {
       }
     } catch (error) {
       console.error('Error adding game to owned list:', error);
-      alert('Failed to add game to owned list. It might already be in your list.');
+      showNotification('Failed to add game to owned list. It might already be in your list.', 'error');
     }
   };
 
@@ -132,10 +138,11 @@ const Games = () => {
       const response = await api.post('/users/remove-owned-game', { gameId });
       if (response.data.success) {
         setOwnedGames(prev => prev.filter(game => game.bggId !== gameId));
+        showNotification('Game removed successfully');
       }
     } catch (error) {
       console.error('Error removing game from owned list:', error);
-      alert('Failed to remove game from owned list.');
+      showNotification('Failed to remove game from owned list.', 'error');
     }
   };
 
@@ -149,14 +156,14 @@ const Games = () => {
         params: { username }
       });
       
-      // Add each game to the owned games list
       for (const game of response.data) {
         await addToOwnedGames(game);
       }
       
-      alert('Collection imported successfully!');
+      showNotification('Collection imported successfully!');
     } catch (err) {
       setError('There was an error importing your collection.');
+      showNotification('Failed to import collection.', 'error');
     } finally {
       setImportLoading(false);
     }
@@ -444,6 +451,19 @@ const Games = () => {
 
   return (
     <div className="container mx-auto p-4">
+      {notification.message && (
+        <div 
+          className={`fixed top-4 right-4 p-4 rounded shadow-lg ${
+            notification.type === 'error' 
+              ? 'bg-red-500 text-white' 
+              : 'bg-green-500 text-white'
+          }`}
+          role="alert"
+        >
+          {notification.message}
+        </div>
+      )}
+      
       <h1 className="text-2xl font-bold mb-4">Games</h1>
       
       {/* Tab Navigation */}
