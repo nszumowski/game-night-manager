@@ -158,6 +158,7 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] Game Night - Integrate messaging system or real-time chat for game nights
 - [ ] Game Night - Implement voting system for game selection - random, ranked, weighted? This is optional, the game manager can pick the game(s) or make a poll
 - [ ] UI/UX - Sidebar for navigation w/ icons?
+- [ ] UI/UX - Utilise notification system for messages and errors
 - [ ] Move common components to a shared library
 - [ ] Turn game list into a Component to reuse on my games and friend profiles
 - [ ] Update stored game data from BGG API if changed during a search or import

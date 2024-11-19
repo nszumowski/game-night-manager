@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import api from '../utils/api';
+import { useNotification } from '../contexts/NotificationContext';
 
 const Games = () => {
+  const {showNotification} = useNotification();
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -12,7 +14,6 @@ const Games = () => {
   const [ownedGames, setOwnedGames] = useState([]);
   const [importLoading, setImportLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('owned');
-  const [notification, setNotification] = useState({ message: '', type: '' });
 
   useEffect(() => {
     fetchOwnedGames();
@@ -90,11 +91,6 @@ const Games = () => {
     } catch (error) {
       console.error('Error fetching owned games:', error);
     }
-  };
-
-  const showNotification = (message, type = 'success') => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification({ message: '', type: '' }), 3000);
   };
 
   const addToOwnedGames = async (game) => {
@@ -451,19 +447,6 @@ const Games = () => {
 
   return (
     <div className="container mx-auto p-4">
-      {notification.message && (
-        <div 
-          className={`fixed top-4 right-4 p-4 rounded shadow-lg ${
-            notification.type === 'error' 
-              ? 'bg-red-500 text-white' 
-              : 'bg-green-500 text-white'
-          }`}
-          role="alert"
-        >
-          {notification.message}
-        </div>
-      )}
-      
       <h1 className="text-2xl font-bold mb-4">Games</h1>
       
       {/* Tab Navigation */}

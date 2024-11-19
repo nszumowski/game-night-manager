@@ -11,6 +11,8 @@ import Games from './pages/Games';
 import Friends from './pages/Friends';
 import Navbar from './components/Navbar';
 import { verifyToken } from './utils/api';
+import { NotificationProvider } from './contexts/NotificationContext';
+import Notification from './components/Notification';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const isAuthenticated = localStorage.getItem('jwtToken') !== null;
@@ -49,25 +51,28 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <div className="font-sans">
-        <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-        <Switch>
-          <Route path="/login">
-            <Login setIsLoggedIn={setIsLoggedIn} />
-          </Route>
-          <Route path="/register" component={Register} />
-          <Route path="/logout">
-            <Logout setIsLoggedIn={setIsLoggedIn} />
-          </Route>
-          <PrivateRoute path="/game-night/:id" component={GameNight} />
-          <PrivateRoute path="/games" component={Games} />
-          <PrivateRoute path="/friends" component={Friends} />
-          <PrivateRoute path="/profile/:userId?" component={Profile} />
-          <Route path="/" exact component={Home} />
-        </Switch>
-      </div>
-    </Router>
+    <NotificationProvider>
+      <Router>
+        <div className="font-sans">
+          <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+          <Notification />
+          <Switch>
+            <Route path="/login">
+              <Login setIsLoggedIn={setIsLoggedIn} />
+            </Route>
+            <Route path="/register" component={Register} />
+            <Route path="/logout">
+              <Logout setIsLoggedIn={setIsLoggedIn} />
+            </Route>
+            <PrivateRoute path="/game-night/:id" component={GameNight} />
+            <PrivateRoute path="/games" component={Games} />
+            <PrivateRoute path="/friends" component={Friends} />
+            <PrivateRoute path="/profile/:userId?" component={Profile} />
+            <Route path="/" exact component={Home} />
+          </Switch>
+        </div>
+      </Router>
+    </NotificationProvider>
   );
 }
 
