@@ -6,8 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const Profile = () => {
   const {userId} = useParams();
-  // const [user, setUser] = useState(null);
-  const { user, loading } = useAuth();
+  const { user, setUser, loading } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -21,6 +20,7 @@ const Profile = () => {
   const [myGames, setMyGames] = useState([]);
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [profileData, setProfileData] = useState(null);
 
   const API_URL = process.env.APP_API_URL || 'http://localhost:5000';
 
@@ -49,31 +49,18 @@ const Profile = () => {
         setIsOwnProfile(false);
         const friendsResponse = await api.get('/friends/list');
         setIsFriend(friendsResponse.data.friends.some(friend => friend._id === userId));
+        setProfileData(response.data.user);
       } else {
         response = await api.get('/users/profile');
         setIsOwnProfile(true);
+        setUser(response.data.user);
       }
-
-      const userData = response.data.user || response.data;
-      
-      setUser({
-        _id: userData._id,
-        name: userData.name,
-        email: userData.email,
-        bggUsername: userData.bggUsername,
-        profileImage: userData.profileImage,
-        date: userData.date || userData.createdAt,
-        ownedGames: userData.ownedGames || []
-      });
       
       setUserGames(
-        (userData.ownedGames || []).sort((a, b) => 
+        (response.data.ownedGames || []).sort((a, b) => 
           a.title.localeCompare(b.title)
         )
       );
-      
-      console.log('Profile response:', response.data);
-      console.log('Processed user data:', userData);
       
     } catch (error) {
       console.error('There was an error fetching the user profile!', error);
