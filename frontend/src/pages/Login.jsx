@@ -1,27 +1,32 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import api from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 
-const Login = ({ setIsLoggedIn }) => {
+const Login = () => {
+  const { login } = useAuth();
+  const { showNotification } = useNotification();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear any existing errors
+    setError('');
+    setIsLoading(true);
 
     try {
-      const response = await api.post('/users/login', { email, password });
-      if (response.data.success) {
-        localStorage.setItem('jwtToken', response.data.token); // Store the token in local storage
-        setIsLoggedIn(true); // Update the application state to reflect that the user is logged in
-        history.push('/profile'); // Redirect the user to the profile page
-      }
+      await login(email, password);
+      showNotification('Successfully logged in!');
+      history.push('/profile');
     } catch (error) {
-      console.error('There was an error logging in the user!', error);
-      setError('Invalid email or password. Please try again.');
+      console.error('Login submission error:', error);
+      setError(error.response?.data?.message || 'Login failed. Please try again.');
+      showNotification('Login failed', 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,7 +65,13 @@ const Login = ({ setIsLoggedIn }) => {
             aria-label="Password"
           />
         </div>
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded" aria-label="Login">Login</button>
+        <button 
+          type="submit" 
+          className={`bg-blue-500 text-white p-2 rounded hover:bg-blue-600 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Logging in...' : 'Login'}
+        </button>
       </form>
     </div>
   );

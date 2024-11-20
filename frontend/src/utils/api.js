@@ -7,67 +7,67 @@ const api = axios.create({
   }
 });
 
-// Add a request interceptor
+// Add request interceptor with detailed logging
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('jwtToken');
-    console.log('Request interceptor - Token:', token);
     if (token) {
       config.headers.Authorization = token;
-      console.log('Request headers:', config.headers);
+      console.log('Request with token:', {
+        url: config.url,
+        method: config.method,
+        authHeader: config.headers.Authorization
+      });
+    } else {
+      console.log('Request without token:', {
+        url: config.url,
+        method: config.method
+      });
     }
     return config;
   },
   (error) => {
+    console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
 
-// Add a response interceptor
+// Add response interceptor with detailed logging
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    console.log('Response error status:', error.response?.status);
-    console.log('Original request:', originalRequest);
+  (response) => {
+    console.log('Response success:', {
+      url: response.config.url,
+      status: response.status,
+      data: response.data
+    });
+    return response;
+  },
+  (error) => {
+    console.error('Response error:', {
+      url: error.config?.url,
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message
+    });
 
-    if (error.response.status === 401 && !originalRequest._retry &&
-      originalRequest.url !== '/users/refresh-token') {
-      console.log('Attempting token refresh...');
-      originalRequest._retry = true;
-
-      try {
-        const token = localStorage.getItem('jwtToken');
-        console.log('Current token for refresh:', token);
-        const response = await api.post('/users/refresh-token');
-        console.log('Refresh token response:', response.data);
-
-        if (response.data.success) {
-          console.log('New token received:', response.data.token);
-          localStorage.setItem('jwtToken', response.data.token);
-          // Update the original request with the new token
-          originalRequest.headers.Authorization = response.data.token;
-          // Retry the original request with the new token
-          return api(originalRequest);
-        }
-      } catch (error) {
-        console.error('Token refresh failed:', error);
-        localStorage.removeItem('jwtToken');
-        window.location.href = '/login';
-        return Promise.reject(error);
-      }
+    if (error.response?.status === 401) {
+      console.log('Unauthorized response - clearing token');
+      localStorage.removeItem('jwtToken');
+      delete api.defaults.headers.common['Authorization'];
     }
-
+    console.log('Response error status:', error.response?.status);
+    console.log('Original request:', error.config);
     return Promise.reject(error);
   }
 );
 
-// Verify token
+// Add token verification function
 export const verifyToken = async () => {
   try {
-    await api.get('/users/verify-token');
-    return true;
+    const response = await api.get('/users/verify-token');
+    return response.data.valid;
   } catch (error) {
+    console.error('Token verification error:', error);
     return false;
   }
 };

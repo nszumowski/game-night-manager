@@ -113,7 +113,7 @@ router.post('/register', async (req, res) => {
     const payload = { id: user.id, name: user.name, email: user.email };
     const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 60 });
 
-    res.json({ success: true, token: 'Bearer ' + token });
+    res.json({ success: true, token: token });
   } catch (error) {
     console.error('There was an error registering the user!', error);
     res.status(500).json({ success: false, message: 'Server error' });
@@ -134,7 +134,7 @@ router.post('/login', async (req, res) => {
     if (isMatch) {
       const payload = { id: user.id, name: user.name, email: user.email };
       const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 60 });
-      res.json({ success: true, token: 'Bearer ' + token });
+      res.json({ success: true, token: token });
     } else {
       return res.status(400).json({ password: 'Password incorrect' });
     }
@@ -370,7 +370,7 @@ router.post('/refresh-token', async (req, res) => {
       const newToken = jwt.sign(payload, keys.secretOrKey, { expiresIn: 60 });
       console.log('New token generated:', newToken);
 
-      res.json({ success: true, token: 'Bearer ' + newToken });
+      res.json({ success: true, token: newToken });
     } catch (decodeError) {
       console.error('Token decode error:', decodeError);
       return res.status(401).json({ success: false, message: 'Invalid token' });

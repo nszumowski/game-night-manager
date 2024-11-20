@@ -13,14 +13,20 @@ import Navbar from './components/Navbar';
 import { verifyToken } from './utils/api';
 import { NotificationProvider } from './contexts/NotificationContext';
 import Notification from './components/Notification';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
-  const isAuthenticated = localStorage.getItem('jwtToken') !== null;
+  const { isLoggedIn, loading } = useAuth();
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Route
       {...rest}
       render={props =>
-        isAuthenticated ? (
+        isLoggedIn ? (
           <Component {...props} />
         ) : (
           <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
@@ -31,48 +37,27 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 };
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('jwtToken');
-      if (token) {
-        const isValid = await verifyToken();
-        if (!isValid) {
-          localStorage.removeItem('jwtToken');
-          setIsLoggedIn(false);
-        } else {
-          setIsLoggedIn(true);
-        }
-      }
-    };
-    
-    checkAuth();
-  }, []);
-
   return (
-    <NotificationProvider>
-      <Router>
-        <div className="font-sans">
-          <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-          <Notification />
-          <Switch>
-            <Route path="/login">
-              <Login setIsLoggedIn={setIsLoggedIn} />
-            </Route>
-            <Route path="/register" component={Register} />
-            <Route path="/logout">
-              <Logout setIsLoggedIn={setIsLoggedIn} />
-            </Route>
-            <PrivateRoute path="/game-night/:id" component={GameNight} />
-            <PrivateRoute path="/games" component={Games} />
-            <PrivateRoute path="/friends" component={Friends} />
-            <PrivateRoute path="/profile/:userId?" component={Profile} />
-            <Route path="/" exact component={Home} />
-          </Switch>
-        </div>
-      </Router>
-    </NotificationProvider>
+    <AuthProvider>
+      <NotificationProvider>
+        <Router>
+          <div className="font-sans">
+            <Navbar />
+            <Notification />
+            <Switch>
+              <Route path="/login" component={Login} />
+              <Route path="/register" component={Register} />
+              <Route path="/logout" component={Logout} />
+              <PrivateRoute path="/game-night/:id" component={GameNight} />
+              <PrivateRoute path="/games" component={Games} />
+              <PrivateRoute path="/friends" component={Friends} />
+              <PrivateRoute path="/profile/:userId?" component={Profile} />
+              <Route path="/" exact component={Home} />
+            </Switch>
+          </div>
+        </Router>
+      </NotificationProvider>
+    </AuthProvider>
   );
 }
 

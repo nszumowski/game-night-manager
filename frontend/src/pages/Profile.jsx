@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../utils/api';
 import { FaExternalLinkAlt, FaUser, FaCamera, FaTimes } from 'react-icons/fa';
+import { useAuth } from '../contexts/AuthContext';
 
 const Profile = () => {
   const {userId} = useParams();
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+  const { user, loading } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -175,8 +177,12 @@ const Profile = () => {
     }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   if (!user) {
-    return <div className="container mx-auto p-4">Loading...</div>;
+    return <div>Error loading profile</div>;
   }
 
   return (

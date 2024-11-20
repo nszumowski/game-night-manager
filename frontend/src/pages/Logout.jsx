@@ -1,19 +1,15 @@
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-const Logout = ({ setIsLoggedIn }) => {
+const Logout = () => {
+  const { logout } = useAuth();
   const history = useHistory();
 
   useEffect(() => {
-    // Remove the JWT token from local storage
-    localStorage.removeItem('jwtToken');
-
-    // Update the application state to reflect that the user is logged out
-    setIsLoggedIn(false);
-
-    // Redirect the user to the home page
+    logout();
     history.push('/');
-  }, [history, setIsLoggedIn]);
+  }, [history, logout]);
 
   return null;
 };

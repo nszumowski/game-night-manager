@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import api from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -9,6 +11,8 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const history = useHistory();
+  const { login } = useAuth();
+  const { showNotification } = useNotification();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,11 +38,12 @@ const Register = () => {
       });
       
       if (response.data.success) {
-        localStorage.setItem('jwtToken', response.data.token);
+        await login(email, password);
+        showNotification('Registration successful!');
         history.push('/profile');
       }
     } catch (error) {
-      console.error('There was an error registering the user!', error);
+      console.error('Registration error:', error);
       setError(error.response?.data?.message || 'Registration failed');
     }
   };
