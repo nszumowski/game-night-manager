@@ -104,11 +104,15 @@ game-night-manager/
 │   ├── Dockerfile
 │   ├── models/
 │   │   ├── User.js
-│   │   └── Game.js
+│   │   ├── Game.js
+│   │   └── Friend.js
 │   ├── package.json
 │   ├── routes/
 │   │   ├── users.js
-│   │   └── games.js
+│   │   ├── games.js
+│   │   └── friends.js
+│   ├── uploads/
+│   │   └── profiles/
 │   └── server.js
 ├── docker-compose.yml
 ├── frontend/
@@ -126,17 +130,24 @@ game-night-manager/
 │   └── src/
 │       ├── App.js
 │       ├── components/
-│       │   └── Navbar.js
+│       │   ├── Navbar.js
+│       │   └── Notification.js
+│       ├── contexts/
+│       │   ├── AuthContext.jsx
+│       │   └── NotificationContext.jsx
 │       ├── index.css
 │       ├── index.js
-│       └── pages/
-│           ├── GameNight.js
-│           ├── Games.js
-│           ├── Home.js
-│           ├── Login.js
-│           ├── Logout.js
-│           ├── Profile.js
-│           └── Register.js
+│       ├── pages/
+│       │   ├── Friends.js
+│       │   ├── GameNight.js
+│       │   ├── Games.js
+│       │   ├── Home.js
+│       │   ├── Login.js
+│       │   ├── Logout.js
+│       │   ├── Profile.js
+│       │   └── Register.js
+│       └── utils/
+│           └── api.js
 ├── LICENSE.txt
 ├── package.json
 └── README.md
@@ -145,7 +156,7 @@ game-night-manager/
 ## License
 
 This project is licensed under a Proprietary License Agreement - see the LICENSE.txt file for details.
-
+ 
 ## TODO
 
 - [ ] **Implement some form of caching for api queries - store search results even if not in database?**
@@ -162,7 +173,7 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] Move common components to a shared library
 - [ ] Turn game list into a Component to reuse on my games and friend profiles
 - [ ] Update stored game data from BGG API if changed during a search or import
-- [ ] oAuth?
+- [ ] oAuth? redux auth management?
 - [ ] Invitiations instead of open registration initially?
 - [ ] Develop mobile app versions (iOS/Android)
 - [ ] Add unit and integration tests
