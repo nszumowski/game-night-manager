@@ -42,25 +42,20 @@ export const AuthProvider = ({ children }) => {
     try {
       const loginResponse = await api.post('/users/login', { email, password });
       
-      if (!loginResponse.data.token) {
-        throw new Error('No token received from server');
+      if (!loginResponse.data.token || !loginResponse.data.refreshToken) {
+        throw new Error('No tokens received from server');
       }
 
       const token = `Bearer ${loginResponse.data.token}`;
       localStorage.setItem('jwtToken', token);
+      localStorage.setItem('refreshToken', loginResponse.data.refreshToken);
       
       api.defaults.headers.common['Authorization'] = token;
 
-      try {
-        const profileResponse = await api.get('/users/profile');
-        setUser(profileResponse.data.user);
-        setIsLoggedIn(true);
-        return loginResponse;
-      } catch (profileError) {
-        console.error('Profile fetch error:', profileError);
-        logout();
-        throw new Error('Failed to fetch user profile');
-      }
+      const profileResponse = await api.get('/users/profile');
+      setUser(profileResponse.data.user);
+      setIsLoggedIn(true);
+      return loginResponse;
     } catch (error) {
       console.error('Login error:', error);
       logout();

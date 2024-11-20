@@ -111,9 +111,14 @@ router.post('/register', async (req, res) => {
     await user.save();
 
     const payload = { id: user.id, name: user.name, email: user.email };
-    const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 60 });
+    const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: '15m' });
+    const refreshToken = jwt.sign(payload, keys.secretOrKey, { expiresIn: '7d' });
 
-    res.json({ success: true, token: token });
+    res.json({
+      success: true,
+      token: `Bearer ${token}`,
+      refreshToken: refreshToken
+    });
   } catch (error) {
     console.error('There was an error registering the user!', error);
     res.status(500).json({ success: false, message: 'Server error' });
@@ -133,8 +138,13 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       const payload = { id: user.id, name: user.name, email: user.email };
-      const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 60 });
-      res.json({ success: true, token: token });
+      const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: '15m' });
+      const refreshToken = jwt.sign(payload, keys.secretOrKey, { expiresIn: '7d' });
+      res.json({
+        success: true,
+        token: `Bearer ${token}`,
+        refreshToken: refreshToken
+      });
     } else {
       return res.status(400).json({ password: 'Password incorrect' });
     }
@@ -338,46 +348,36 @@ router.post('/remove-owned-game', passport.authenticate('jwt', { session: false 
 // Refresh token route
 router.post('/refresh-token', async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    console.log('Refresh token request headers:', req.headers);
-    console.log('Authorization header:', authHeader);
+    const { refreshToken } = req.body;
 
-    if (!authHeader) {
-      return res.status(401).json({ success: false, message: 'No token provided' });
+    if (!refreshToken) {
+      return res.status(401).json({ success: false, message: 'No refresh token provided' });
     }
 
-    // Verify the existing token
-    const token = authHeader.replace('Bearer ', '');
-    console.log('Token to verify:', token);
-
     try {
-      // Try to decode the token without verification
-      const decoded = jwt.decode(token);
-      console.log('Decoded token:', decoded);
-
-      if (!decoded || !decoded.id) {
-        return res.status(401).json({ success: false, message: 'Invalid token format' });
-      }
-
-      // Check if the user exists
+      const decoded = jwt.verify(refreshToken, keys.secretOrKey);
       const user = await User.findById(decoded.id);
+
       if (!user) {
         return res.status(401).json({ success: false, message: 'User not found' });
       }
 
-      // Generate a new token
-      const payload = { id: decoded.id, name: decoded.name, email: decoded.email };
+      const payload = { id: user.id, name: user.name, email: user.email };
       const newToken = jwt.sign(payload, keys.secretOrKey, { expiresIn: 60 });
-      console.log('New token generated:', newToken);
+      const newRefreshToken = jwt.sign(payload, keys.secretOrKey, { expiresIn: '7d' });
 
-      res.json({ success: true, token: newToken });
-    } catch (decodeError) {
-      console.error('Token decode error:', decodeError);
-      return res.status(401).json({ success: false, message: 'Invalid token' });
+      res.json({
+        success: true,
+        token: `Bearer ${newToken}`,
+        refreshToken: newRefreshToken
+      });
+    } catch (verifyError) {
+      console.error('Token verification error:', verifyError);
+      return res.status(401).json({ success: false, message: 'Invalid refresh token' });
     }
   } catch (error) {
     console.error('Error refreshing token:', error);
-    res.status(401).json({ success: false, message: 'Invalid token' });
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
