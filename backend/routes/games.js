@@ -100,6 +100,11 @@ router.get('/details', async (req, res) => {
     const minPlaytime = item.minplaytime ? parseInt(item.minplaytime[0].$.value) : null;
     const maxPlaytime = item.maxplaytime ? parseInt(item.maxplaytime[0].$.value) : null;
 
+    // Get and format weight
+    const weight = item.statistics?.[0]?.ratings?.[0]?.averageweight?.[0]?.$.value
+      ? Number(parseFloat(item.statistics[0].ratings[0].averageweight[0].$.value).toFixed(2))
+      : null;
+
     const gameDetails = {
       id,
       title,
@@ -110,6 +115,7 @@ router.get('/details', async (req, res) => {
       bestWith,
       minPlaytime,
       maxPlaytime,
+      weight,
       rawData: response.data
     };
 
@@ -172,6 +178,11 @@ router.get('/collection', async (req, res) => {
         }
       }
 
+      // Get and format weight
+      const weight = gameItem.statistics?.[0]?.ratings?.[0]?.averageweight?.[0]?.$.value
+        ? Number(parseFloat(gameItem.statistics[0].ratings[0].averageweight[0].$.value).toFixed(2))
+        : null;
+
       return {
         id: gameId,
         title,
@@ -181,7 +192,8 @@ router.get('/collection', async (req, res) => {
         maxPlayers,
         bestWith,
         minPlaytime,
-        maxPlaytime
+        maxPlaytime,
+        weight
       };
     }));
 

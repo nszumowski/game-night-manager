@@ -395,6 +395,11 @@ const Profile = () => {
                               : `${game.minPlaytime}-${game.maxPlaytime} minutes`}
                           </span>
                         )}
+                        {game.weight && (
+                          <span className="text-gray-600 text-sm mr-3">
+                            Weight: {game.weight}
+                          </span>
+                        )}
                       </div>
                       <div className="text-gray-700">
                         <a 

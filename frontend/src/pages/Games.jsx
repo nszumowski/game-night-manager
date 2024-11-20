@@ -101,10 +101,11 @@ const Games = () => {
         minPlayers: game.minPlayers,
         maxPlayers: game.maxPlayers,
         bestWith: game.bestWith,
-        year: game.year,
-        image: game.image,
         minPlaytime: game.minPlaytime,
-        maxPlaytime: game.maxPlaytime
+        maxPlaytime: game.maxPlaytime,
+        weight: game.weight,
+        year: game.year,
+        image: game.image
       });
       if (response.data.success) {
         setOwnedGames(prev => [...prev, {
@@ -113,6 +114,7 @@ const Games = () => {
           minPlayers: game.minPlayers,
           maxPlayers: game.maxPlayers,
           bestWith: game.bestWith,
+          weight: game.weight,
           year: game.year,
           image: game.image,
           minPlaytime: game.minPlaytime,
@@ -209,6 +211,11 @@ const Games = () => {
                           {game.minPlaytime === game.maxPlaytime 
                             ? `${game.minPlaytime} minutes`
                             : `${game.minPlaytime}-${game.maxPlaytime} minutes`}
+                        </span>
+                      )}
+                      {game.weight && (
+                        <span className="text-gray-600 text-sm mr-3">
+                          Weight: {game.weight}
                         </span>
                       )}
                     </div>
@@ -341,6 +348,11 @@ const Games = () => {
                         {game.minPlaytime === game.maxPlaytime 
                           ? `${game.minPlaytime} minutes`
                           : `${game.minPlaytime}-${game.maxPlaytime} minutes`}
+                      </span>
+                    )}
+                    {game.weight && (
+                      <span className="text-gray-600 text-sm mr-3">
+                        Weight: {game.weight}
                       </span>
                     )}
                   </div>
