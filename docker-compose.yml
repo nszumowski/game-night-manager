@@ -17,6 +17,9 @@ services:
       - profile-uploads:/usr/src/app/uploads/profiles
     depends_on:
       - mongo
+    entrypoint: ["node", "server.js"]
+    networks:
+      - app-network
 
   frontend:
     build:
@@ -31,6 +34,8 @@ services:
     environment:
       - APP_API_URL=${APP_API_URL}
       - APP_ENV=${APP_ENV}
+    networks:
+      - app-network
 
   mongo:
     image: mongo:4.4
@@ -38,7 +43,13 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - app-network
 
 volumes:
   mongo-data:
   profile-uploads:
+
+networks:
+  app-network:
+    driver: bridge
