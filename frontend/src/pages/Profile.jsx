@@ -50,10 +50,12 @@ const Profile = () => {
         const friendsResponse = await api.get('/friends/list');
         setIsFriend(friendsResponse.data.friends.some(friend => friend._id === userId));
         setProfileData(response.data.user);
+        console.log("Friends response:", friendsResponse.data.friends);
       } else {
         response = await api.get('/users/profile');
         setIsOwnProfile(true);
         setUser(response.data.user);
+        console.log("Own profile response:", response.data.user);
       }
       
       setUserGames(
@@ -178,7 +180,11 @@ const Profile = () => {
         <div className="relative">
           {user?.profileImage || imagePreview ? (
             <img
-              src={imagePreview || `${API_URL}/uploads/profiles/${user.profileImage}`}
+              // src={imagePreview || `${API_URL}/uploads/profiles/${user.profileImage}`}
+              src={isOwnProfile
+                ? (imagePreview || `${API_URL}/uploads/profiles/${user?.profileImage}`)
+                : `${API_URL}/uploads/profiles/${profileData?.profileImage}`
+              }
               alt={`${user.name}'s profile`}
               className="w-24 h-24 rounded-full object-cover"
               onError={(e) => {
@@ -220,7 +226,7 @@ const Profile = () => {
         </div>
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">
-            {isOwnProfile ? 'My Profile' : `${user?.name}'s Profile`}
+            {isOwnProfile ? 'My Profile' : `${profileData?.name}'s Profile`}
           </h1>
           {!isOwnProfile && isFriend && (
             <button
@@ -315,22 +321,38 @@ const Profile = () => {
           </form>
         ) : (
           <div className="flex flex-col gap-2">
-            <p className="text-gray-700"><strong>Name:</strong> {user?.name || 'Not available'}</p>
-            <p className="text-gray-700"><strong>Email:</strong> {user?.email || 'Not available'}</p>
+            <p className="text-gray-700">
+              <strong>Name:</strong> {isOwnProfile ? user?.name : profileData?.name || 'Not available'}
+            </p>
+            <p className="text-gray-700">
+              <strong>Email:</strong> {isOwnProfile ? user?.email : profileData?.email || 'Not available'}
+            </p>
             <p className="text-gray-700">
               <strong>BoardGameGeek Username:</strong> {' '}
-              {user?.bggUsername ? (
-                <a 
-                  href={`https://boardgamegeek.com/user/${user.bggUsername}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1"
-                >
-                  {user.bggUsername}
-                  <FaExternalLinkAlt className="text-xs" aria-label="Opens in new tab" />
-                </a>
+              {isOwnProfile ? (
+                user?.bggUsername ? (
+                  <a 
+                    href={`https://boardgamegeek.com/user/${user.bggUsername}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1"
+                  >
+                    {user.bggUsername}
+                    <FaExternalLinkAlt className="text-xs" aria-label="Opens in new tab" />
+                  </a>
+                ) : 'Not set'
               ) : (
-                'Not set'
+                profileData?.bggUsername ? (
+                  <a 
+                    href={`https://boardgamegeek.com/user/${profileData.bggUsername}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1"
+                  >
+                    {profileData.bggUsername}
+                    <FaExternalLinkAlt className="text-xs" aria-label="Opens in new tab" />
+                  </a>
+                ) : 'Not set'
               )}
             </p>
             {isOwnProfile && (
@@ -347,12 +369,14 @@ const Profile = () => {
       </div>
 
       <p className="text-gray-700">
-        Member since: {user?.date ? new Date(user.date).toLocaleDateString() : 'Not available'}
+        Member since: {(isOwnProfile ? user?.date : profileData?.date) 
+          ? new Date(isOwnProfile ? user.date : profileData.date).toLocaleDateString() 
+          : 'Not available'}
       </p>
       
       <div className="mt-8">
         <h2 className="text-2xl font-bold mb-4">
-          {isOwnProfile ? 'My Games' : `${user.name}'s Games`} ({userGames.length})
+          {isOwnProfile ? 'My Games' : `${profileData?.name}'s Games`} ({userGames.length})
         </h2>
         {userGames.length > 0 ? (
           <ul className="list-none pl-0">
@@ -425,7 +449,7 @@ const Profile = () => {
           </ul>
         ) : (
           <p className="text-gray-700">
-            {isOwnProfile ? "You don't own any games yet." : `${user.name} doesn't own any games yet.`}
+            {isOwnProfile ? "You don't own any games yet." : `${profileData?.name} doesn't own any games yet.`}
           </p>
         )}
       </div>
