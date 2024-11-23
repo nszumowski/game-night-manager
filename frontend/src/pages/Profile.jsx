@@ -253,10 +253,12 @@ const Profile = () => {
               </div>
             )}
           </div>
-          <div className="flex justify-between items-center mb-4">
+          <div>
             <h1 className="text-2xl font-bold">
               {isOwnProfile ? 'My Profile' : `${profileData?.name}'s Profile`}
             </h1>
+          </div>
+          <div>
             {!isOwnProfile && isFriend && (
               <button
                 onClick={removeFriend}
