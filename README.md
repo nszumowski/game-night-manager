@@ -162,9 +162,10 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] **Implement some form of caching for api queries - store search results even if not in database?**
 - [ ] **Implement image caching - clear game images viewed less than a month ago? unless a new version is in search or import? store locally?**
 - [ ] Profile - Update/Forgot Password functionality
+- [ ] Profile - Add game night history
+- [ ] Profile - Add game night calendar
 - [ ] Users - Emails for friend requests and game night invitations
 - [ ] Games - icons for best with, min/max players, min/max playtime
-- [ ] Games - Store and display game weight
 - [ ] Game Night - Add game night creation and management features
 - [ ] Game Night - Integrate messaging system or real-time chat for game nights
 - [ ] Game Night - Implement voting system for game selection - random, ranked, weighted? This is optional, the game manager can pick the game(s) or make a poll
@@ -177,6 +178,8 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] Invitiations instead of open registration initially?
 - [ ] Develop mobile app versions (iOS/Android)
 - [ ] Add unit and integration tests
+- [x] Profile - Hide own games from Profile page
+- [x] Games - Store and display game weight
 - [x] Games - Add link to BGG page
 - [x] Games - Trim amount of text on game cards in search results
 - [x] Games - Sort games in owned list alphabetically

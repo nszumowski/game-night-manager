@@ -197,25 +197,36 @@ const Games = () => {
                     )}
                     <div className="text-sm text-gray-600 mt-1">
                       {game.minPlayers && game.maxPlayers && (
-                        <span className="mr-3">
-                          {game.minPlayers === game.maxPlayers 
-                            ? `${game.minPlayers} players`
-                            : `${game.minPlayers}-${game.maxPlayers} players`}
-                        </span>
+                        <>
+                          <span className="mr-2">
+                            <strong>Players:</strong> {game.minPlayers === game.maxPlayers 
+                              ? `${game.minPlayers}`
+                              : `${game.minPlayers}-${game.maxPlayers}`}
+                          </span>
+                          <span className="mr-2"> | </span>
+                        </>
                       )}
                       {game.bestWith && (
-                        <span className="text-green-600 mr-3">{game.bestWith}</span>
+                        <>
+                          <span className="mr-2">
+                            <strong>Best with:</strong> {game.bestWith} players
+                          </span>
+                          <span className="mr-2"> | </span>
+                        </>
                       )}
                       {(game.minPlaytime || game.maxPlaytime) && (
-                        <span className="mr-3">
-                          {game.minPlaytime === game.maxPlaytime 
-                            ? `${game.minPlaytime} minutes`
-                            : `${game.minPlaytime}-${game.maxPlaytime} minutes`}
-                        </span>
+                        <>
+                          <span className="mr-2">
+                            <strong>Playtime:</strong> {game.minPlaytime === game.maxPlaytime 
+                              ? `${game.minPlaytime} minutes`
+                              : `${game.minPlaytime}-${game.maxPlaytime} minutes`}
+                          </span>
+                          <span className="mr-2"> | </span>
+                        </>
                       )}
                       {game.weight && (
-                        <span className="text-gray-600 text-sm mr-3">
-                          Weight: {game.weight}
+                        <span className="mr-2">
+                          <strong>Weight:</strong> {game.weight}
                         </span>
                       )}
                     </div>
@@ -334,25 +345,36 @@ const Games = () => {
                 <div className="flex flex-col mx-5">
                   <div className="text-sm text-gray-600 mb-3">
                     {game.minPlayers && game.maxPlayers && (
-                      <span className="mr-3">
-                        {game.minPlayers === game.maxPlayers 
-                          ? `${game.minPlayers} players`
-                          : `${game.minPlayers}-${game.maxPlayers} players`}
-                      </span>
+                      <>
+                        <span className="mr-2">
+                          <strong>Players:</strong> {game.minPlayers === game.maxPlayers 
+                            ? `${game.minPlayers}`
+                            : `${game.minPlayers}-${game.maxPlayers}`}
+                        </span>
+                        <span className="mr-2"> | </span>
+                      </>
                     )}
                     {game.bestWith && (
-                      <span className="text-green-600 mr-3">{game.bestWith}</span>
+                      <>
+                        <span className="mr-2">
+                          <strong>Best with:</strong> {game.bestWith} players
+                        </span>
+                        <span className="mr-2"> | </span>
+                      </>
                     )}
                     {(game.minPlaytime || game.maxPlaytime) && (
-                      <span className="mr-3">
-                        {game.minPlaytime === game.maxPlaytime 
-                          ? `${game.minPlaytime} minutes`
-                          : `${game.minPlaytime}-${game.maxPlaytime} minutes`}
-                      </span>
+                      <>
+                        <span className="mr-2">
+                          <strong>Playtime:</strong> {game.minPlaytime === game.maxPlaytime 
+                            ? `${game.minPlaytime} minutes`
+                            : `${game.minPlaytime}-${game.maxPlaytime} minutes`}
+                        </span>
+                        <span className="mr-2"> | </span>
+                      </>
                     )}
                     {game.weight && (
-                      <span className="text-gray-600 text-sm mr-3">
-                        Weight: {game.weight}
+                      <span className="mr-2">
+                        <strong>Weight:</strong> {game.weight}
                       </span>
                     )}
                   </div>

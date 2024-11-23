@@ -90,7 +90,7 @@ router.get('/details', async (req, res) => {
           const bestVotes = parseInt(result.result.find(r => r.$.value === 'Best')?.$.numvotes || 0);
           if (bestVotes > highestVotes) {
             highestVotes = bestVotes;
-            bestWith = `Best with ${result.$.numplayers} players`;
+            bestWith = `${result.$.numplayers}`;
           }
         });
       }
@@ -172,7 +172,7 @@ router.get('/collection', async (req, res) => {
             const bestVotes = parseInt(result.result.find(r => r.$.value === 'Best')?.$.numvotes || 0);
             if (bestVotes > highestVotes) {
               highestVotes = bestVotes;
-              bestWith = `Best with ${result.$.numplayers} players`;
+              bestWith = `${result.$.numplayers}`;
             }
           });
         }

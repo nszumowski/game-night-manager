@@ -383,85 +383,99 @@ const Profile = () => {
           : 'Not available'}
       </p>
       
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">
-          {isOwnProfile ? 'My Games' : `${profileData?.name}'s Games`} ({userGames.length})
-        </h2>
-        {userGames.length > 0 ? (
-          <ul className="list-none pl-0">
-            {userGames.map((game) => {
-              const iSharedGame = myGames.some(myGame => myGame.bggId === game.bggId);
-              return (
-                <li key={game._id} className="flex items-center justify-between border-b py-2">
-                  <div className="flex items-center">
-                    {game.image && (
-                      <img 
-                        src={game.image} 
-                        alt={game.title} 
-                        className="w-16 h-16 object-contain mr-4"
-                        loading="lazy"
-                        onError={(e) => e.target.src = '/placeholder-game.png'}
-                      />
-                    )}
-                    <div>
-                      <span className="text-gray-700 font-medium">
-                        {game.title}
-                      </span>
-                      {game.year && (
-                        <span className="text-gray-500 ml-2">({game.year})</span>
+      {!isOwnProfile && (
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">
+            {`${profileData?.name}'s Games`} ({userGames.length})
+          </h2>
+          {userGames.length > 0 ? (
+            <ul className="list-none pl-0">
+              {userGames.map((game) => {
+                const iSharedGame = myGames.some(myGame => myGame.bggId === game.bggId);
+                return (
+                  <li key={game._id} className="flex items-center justify-between border-b py-2">
+                    <div className="flex items-center">
+                      {game.image && (
+                        <img 
+                          src={game.image} 
+                          alt={game.title} 
+                          className="w-16 h-16 object-contain mr-4"
+                          loading="lazy"
+                          onError={(e) => e.target.src = '/placeholder-game.png'}
+                        />
                       )}
-                      <div className="text-sm text-gray-600 mt-1">
-                        {game.minPlayers && game.maxPlayers && (
-                          <span className="mr-3">
-                            {game.minPlayers === game.maxPlayers 
-                              ? `${game.minPlayers} players`
-                              : `${game.minPlayers}-${game.maxPlayers} players`}
-                          </span>
+                      <div>
+                        <span className="text-gray-700 font-medium">
+                          {game.title}
+                        </span>
+                        {game.year && (
+                          <span className="text-gray-500 ml-2">({game.year})</span>
                         )}
-                        {game.bestWith && (
-                          <span className="text-green-600 mr-3">{game.bestWith}</span>
-                        )}
-                        {(game.minPlaytime || game.maxPlaytime) && (
-                          <span className="mr-3">
-                            {game.minPlaytime === game.maxPlaytime 
-                              ? `${game.minPlaytime} minutes`
-                              : `${game.minPlaytime}-${game.maxPlaytime} minutes`}
-                          </span>
-                        )}
-                        {game.weight && (
-                          <span className="text-gray-600 text-sm mr-3">
-                            Weight: {game.weight}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-gray-700">
-                        <a 
-                          href={`https://boardgamegeek.com/boardgame/${game.bggId}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 hover:text-blue-700 mt-2 inline-block font-bold text-sm"
-                          aria-label={`Read more about ${game.title} on BoardGameGeek`}
-                        >
-                          Read more on BGG →
-                        </a>
+                        <div className="text-sm text-gray-600 mt-1">
+                          {game.minPlayers && game.maxPlayers && (
+                            <>
+                              <span className="mr-2">
+                                <strong>Players:</strong> {game.minPlayers === game.maxPlayers 
+                                  ? `${game.minPlayers}`
+                                  : `${game.minPlayers}-${game.maxPlayers}`}
+                              </span>
+                              <span className="mr-2"> | </span>
+                            </>
+                          )}
+                          {game.bestWith && (
+                            <>
+                              <span className="mr-2">
+                                <strong>Best with:</strong> {game.bestWith} players
+                              </span>
+                              <span className="mr-2"> | </span>
+                            </>
+                          )}
+                          {(game.minPlaytime || game.maxPlaytime) && (
+                            <>
+                              <span className="mr-2">
+                                <strong>Playtime:</strong> {game.minPlaytime === game.maxPlaytime 
+                                  ? `${game.minPlaytime} minutes`
+                                  : `${game.minPlaytime}-${game.maxPlaytime} minutes`}
+                              </span>
+                              <span className="mr-2"> | </span>
+                            </>
+                          )}
+                          {game.weight && (
+                            <span className="mr-2">
+                              <strong>Weight:</strong> {game.weight}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-gray-700">
+                          <a 
+                            href={`https://boardgamegeek.com/boardgame/${game.bggId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:text-blue-700 mt-2 inline-block font-bold text-sm"
+                            aria-label={`Read more about ${game.title} on BoardGameGeek`}
+                          >
+                            Read more on BGG →
+                          </a>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {!isOwnProfile && iSharedGame && (
-                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full ml-4">
-                      You own this
-                    </span>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        ) : (
-          <p className="text-gray-700">
-            {isOwnProfile ? "You don't own any games yet." : `${profileData?.name} doesn't own any games yet.`}
-          </p>
-        )}
-      </div>
+                    {!isOwnProfile && iSharedGame && (
+                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full ml-4">
+                        You own this
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="text-gray-700">
+              {isOwnProfile ? "You don't own any games yet." : `${profileData?.name} doesn't own any games yet.`}
+            </p>
+          )}
+        </div>
+      )}
+
     </div>
   );
 };
