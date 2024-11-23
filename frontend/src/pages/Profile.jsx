@@ -21,6 +21,7 @@ const Profile = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [profileData, setProfileData] = useState(null);
+  const [isFriendDataLoading, setIsFriendDataLoading] = useState(userId ? true : false);
 
   const API_URL = process.env.APP_API_URL || 'http://localhost:5000';
 
@@ -45,6 +46,7 @@ const Profile = () => {
     try {
       let response;
       if (userId) {
+        setIsFriendDataLoading(true);
         response = await api.get(`/users/profile/${userId}`);
         setIsOwnProfile(false);
         const friendsResponse = await api.get('/friends/list');
@@ -59,6 +61,7 @@ const Profile = () => {
             )
           );
         }
+        setIsFriendDataLoading(false);
       } else {
         response = await api.get('/users/profile');
         setIsOwnProfile(true);
@@ -75,6 +78,7 @@ const Profile = () => {
       }
     } catch (error) {
       console.error('There was an error fetching the user profile!', error);
+      setIsFriendDataLoading(false);
     }
   };
 
@@ -185,69 +189,86 @@ const Profile = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="relative">
-          {user?.profileImage || imagePreview ? (
-            <img
-              // src={imagePreview || `${API_URL}/uploads/profiles/${user.profileImage}`}
-              src={isOwnProfile
-                ? (imagePreview || `${API_URL}/uploads/profiles/${user?.profileImage}`)
-                : `${API_URL}/uploads/profiles/${profileData?.profileImage}`
-              }
-              alt={`${user.name}'s profile`}
-              className="w-24 h-24 rounded-full object-cover"
-              onError={(e) => {
-                console.error('Image failed to load:', e.target.src);
-                e.target.onerror = null;
-                e.target.src = '/placeholder-game.png';
-              }}
-            />
-          ) : (
-            <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
-              <FaUser className="text-gray-400 text-3xl" />
+      {isFriendDataLoading ? (
+        <div className="animate-pulse">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-24 h-24 bg-gray-200 rounded-full"></div>
+            <div className="space-y-3">
+              <div className="h-6 bg-gray-200 rounded w-48"></div>
             </div>
-          )}
-          {isOwnProfile && isEditing && (
-            <div className="absolute bottom-0 right-0 flex gap-2">
-              {(imagePreview || user?.profileImage) && (
-                <button
-                  onClick={handleRemoveImage}
-                  className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-                  aria-label="Remove profile image"
-                >
-                  <FaTimes className="text-sm" />
-                </button>
-              )}
-              <label htmlFor="profileImage" className="cursor-pointer">
-                <div className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600">
-                  <FaCamera className="text-sm" />
-                </div>
-                <input
-                  type="file"
-                  id="profileImage"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-              </label>
-            </div>
-          )}
+          </div>
+          <div className="space-y-3 mt-4">
+            <div className="h-4 bg-gray-200 rounded w-64"></div>
+            <div className="h-4 bg-gray-200 rounded w-52"></div>
+            <div className="h-4 bg-gray-200 rounded w-32"></div>
+            <div className="h-4 bg-gray-200 rounded w-48"></div>
+          </div>
         </div>
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">
-            {isOwnProfile ? 'My Profile' : `${profileData?.name}'s Profile`}
-          </h1>
-          {!isOwnProfile && isFriend && (
-            <button
-              onClick={removeFriend}
-              aria-label="Remove friend"
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-colors duration-200"
-            >
-              Remove Friend
-            </button>
-          )}
+      ) : (
+        <div className="flex items-center gap-4 mb-6">
+          <div className="relative">
+            {user?.profileImage || imagePreview ? (
+              <img
+                // src={imagePreview || `${API_URL}/uploads/profiles/${user.profileImage}`}
+                src={isOwnProfile
+                  ? (imagePreview || `${API_URL}/uploads/profiles/${user?.profileImage}`)
+                  : `${API_URL}/uploads/profiles/${profileData?.profileImage}`
+                }
+                alt={`${user.name}'s profile`}
+                className="w-24 h-24 rounded-full object-cover"
+                onError={(e) => {
+                  console.error('Image failed to load:', e.target.src);
+                  e.target.onerror = null;
+                  e.target.src = '/placeholder-game.png';
+                }}
+              />
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
+                <FaUser className="text-gray-400 text-3xl" />
+              </div>
+            )}
+            {isOwnProfile && isEditing && (
+              <div className="absolute bottom-0 right-0 flex gap-2">
+                {(imagePreview || user?.profileImage) && (
+                  <button
+                    onClick={handleRemoveImage}
+                    className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                    aria-label="Remove profile image"
+                  >
+                    <FaTimes className="text-sm" />
+                  </button>
+                )}
+                <label htmlFor="profileImage" className="cursor-pointer">
+                  <div className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600">
+                    <FaCamera className="text-sm" />
+                  </div>
+                  <input
+                    type="file"
+                    id="profileImage"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            )}
+          </div>
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold">
+              {isOwnProfile ? 'My Profile' : `${profileData?.name}'s Profile`}
+            </h1>
+            {!isOwnProfile && isFriend && (
+              <button
+                onClick={removeFriend}
+                aria-label="Remove friend"
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-colors duration-200"
+              >
+                Remove Friend
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
       
       <div className="mb-4">
         {isOwnProfile && isEditing ? (
