@@ -50,20 +50,29 @@ const Profile = () => {
         const friendsResponse = await api.get('/friends/list');
         setIsFriend(friendsResponse.data.friends.some(friend => friend._id === userId));
         setProfileData(response.data.user);
-        console.log("Friends response:", friendsResponse.data.friends);
+        
+        // Set friend's games
+        if (response.data.user && response.data.user.ownedGames) {
+          setUserGames(
+            response.data.user.ownedGames.sort((a, b) => 
+              a.title.localeCompare(b.title)
+            )
+          );
+        }
       } else {
         response = await api.get('/users/profile');
         setIsOwnProfile(true);
         setUser(response.data.user);
-        console.log("Own profile response:", response.data.user);
+        
+        // Set own games
+        if (response.data.user && response.data.user.ownedGames) {
+          setUserGames(
+            response.data.user.ownedGames.sort((a, b) => 
+              a.title.localeCompare(b.title)
+            )
+          );
+        }
       }
-      
-      setUserGames(
-        (response.data.ownedGames || []).sort((a, b) => 
-          a.title.localeCompare(b.title)
-        )
-      );
-      
     } catch (error) {
       console.error('There was an error fetching the user profile!', error);
     }
