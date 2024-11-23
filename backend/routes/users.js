@@ -160,7 +160,7 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), async (
     const user = await User.findById(req.user.id)
       .populate({
         path: 'ownedGames',
-        select: 'title bggId year image minPlayers maxPlayers bestWith minPlaytime maxPlaytime'
+        select: 'title bggId year image minPlayers maxPlayers bestWith minPlaytime maxPlaytime weight'
       });
 
     if (!user) {
@@ -283,7 +283,7 @@ router.put('/update-profile', passport.authenticate('jwt', { session: false }), 
 // Add game to owned games list route
 router.post('/add-owned-game', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    const { gameTitle, gameId, minPlayers, maxPlayers, bestWith, year, image, minPlaytime, maxPlaytime } = req.body;
+    const { gameTitle, gameId, minPlayers, maxPlayers, bestWith, year, image, minPlaytime, maxPlaytime, weight } = req.body;
     const user = await User.findById(req.user.id);
 
     let game = await Game.findOne({ bggId: gameId });
@@ -296,6 +296,7 @@ router.post('/add-owned-game', passport.authenticate('jwt', { session: false }),
         bestWith,
         minPlaytime,
         maxPlaytime,
+        weight,
         year,
         image
       });
@@ -307,6 +308,7 @@ router.post('/add-owned-game', passport.authenticate('jwt', { session: false }),
       game.bestWith = bestWith;
       game.minPlaytime = minPlaytime;
       game.maxPlaytime = maxPlaytime;
+      game.weight = weight;
       game.year = year;
       game.image = image;
       await game.save();
