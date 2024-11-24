@@ -14,6 +14,8 @@ import { verifyToken } from './utils/api';
 import { NotificationProvider } from './contexts/NotificationContext';
 import Notification from './components/Notification';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const { isLoggedIn, loading } = useAuth();
@@ -53,6 +55,8 @@ function App() {
               <PrivateRoute path="/friends" component={Friends} />
               <PrivateRoute path="/profile/:userId?" component={Profile} />
               <Route path="/" exact component={Home} />
+              <Route exact path="/forgot-password" component={ForgotPassword} />
+              <Route exact path="/reset-password/:token" component={ResetPassword} />
             </Switch>
           </div>
         </Router>

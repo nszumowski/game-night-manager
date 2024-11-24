@@ -6,6 +6,7 @@ const cors = require('cors');
 const users = require('./routes/users');
 const games = require('./routes/games');
 const friends = require('./routes/friends');
+const authRoutes = require('./routes/auth');
 const path = require('path');
 const compression = require('compression');
 
@@ -39,6 +40,7 @@ require('./config/passport')(passport);
 app.use('/api/users', users);
 app.use('/api/games', games);
 app.use('/api/friends', friends);
+app.use('/api/auth', authRoutes);
 
 // Add this before the static file middleware
 app.use('/uploads/profiles', (req, res, next) => {

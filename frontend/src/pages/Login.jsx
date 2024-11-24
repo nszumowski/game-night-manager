@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
 
@@ -65,13 +65,21 @@ const Login = () => {
             aria-label="Password"
           />
         </div>
-        <button 
-          type="submit" 
-          className={`bg-blue-500 text-white p-2 rounded hover:bg-blue-600 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Logging in...' : 'Login'}
-        </button>
+        <div className="flex justify-between items-center mb-4">
+          <button 
+            type="submit" 
+            className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
+          <Link 
+            to="/forgot-password" 
+            className="text-blue-500 hover:text-blue-700"
+          >
+            Forgot Password?
+          </Link>
+        </div>
       </form>
     </div>
   );
