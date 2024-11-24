@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import api from '../utils/api';
 import { FaExternalLinkAlt, FaUser, FaCamera, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 
 const Profile = () => {
   const {userId} = useParams();
@@ -11,7 +12,10 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    bggUsername: ''
+    bggUsername: '',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
   });
   const [error, setError] = useState('');
   const [isOwnProfile, setIsOwnProfile] = useState(true);
@@ -22,6 +26,7 @@ const Profile = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const [isFriendDataLoading, setIsFriendDataLoading] = useState(userId ? true : false);
+  const { showNotification } = useNotification();
 
   const API_URL = process.env.APP_API_URL || 'http://localhost:5000';
 
@@ -137,6 +142,44 @@ const Profile = () => {
     } catch (error) {
       console.error('Error updating profile:', error);
       setError(error.response?.data?.message || 'Failed to update profile.');
+    }
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.currentPassword) {
+      setError('Current password is required to change password');
+      showNotification('Current password is required', 'error');
+      return;
+    }
+    
+    if (formData.newPassword !== formData.confirmPassword) {
+      setError('New passwords do not match');
+      showNotification('New passwords do not match', 'error');
+      return;
+    }
+
+    try {
+      await api.put('/users/change-password', {
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword
+      });
+      
+      // Clear password fields
+      setFormData(prev => ({
+        ...prev,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      }));
+      
+      setError('');
+      showNotification('Password updated successfully!', 'success');
+      setIsEditing(false);
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to update password');
+      showNotification('Failed to update password', 'error');
     }
   };
 
@@ -323,9 +366,69 @@ const Profile = () => {
               />
             </div>
 
+            <div className="border-t mt-4 pt-4">
+              <h3 className="text-lg font-medium mb-4">Change Password</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                    Current Password
+                  </label>
+                  <input
+                    id="currentPassword"
+                    name="currentPassword"
+                    type="password"
+                    value={formData.currentPassword}
+                    onChange={handleInputChange}
+                    className="border p-2 rounded w-full"
+                    aria-label="Current password"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                    New Password
+                  </label>
+                  <input
+                    id="newPassword"
+                    name="newPassword"
+                    type="password"
+                    value={formData.newPassword}
+                    onChange={handleInputChange}
+                    className="border p-2 rounded w-full"
+                    aria-label="New password"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                    Confirm Password
+                  </label>
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    className="border p-2 rounded w-full"
+                    aria-label="Confirm password"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handlePasswordChange}
+                  className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                  disabled={!formData.currentPassword || !formData.newPassword || !formData.confirmPassword}
+                >
+                  Update Password
+                </button>
+              </div>
+            </div>
+
             {error && <p className="text-red-500 text-sm">{error}</p>}
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 border-t pt-4">
               <button 
                 type="submit" 
                 className="bg-green-500 text-white p-2 rounded hover:bg-green-600" 
@@ -340,7 +443,10 @@ const Profile = () => {
                   setFormData({
                     name: user.name || '',
                     email: user.email || '',
-                    bggUsername: user.bggUsername || ''
+                    bggUsername: user.bggUsername || '',
+                    currentPassword: '',
+                    newPassword: '',
+                    confirmPassword: ''
                   });
                   setError('');
                 }}
@@ -400,11 +506,13 @@ const Profile = () => {
         )}
       </div>
 
+      {!isEditing && (
       <p className="text-gray-700">
         Member since: {(isOwnProfile ? user?.date : profileData?.date) 
           ? new Date(isOwnProfile ? user.date : profileData.date).toLocaleDateString() 
           : 'Not available'}
-      </p>
+        </p>
+      )}
       
       {!isOwnProfile && (
         <div className="mt-8">
