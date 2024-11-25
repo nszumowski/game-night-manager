@@ -19,10 +19,11 @@ Game Night Manager is a modern app that can be used in the web browser (and even
 
 ## Frontend
 
-- **React**: A popular JavaScript library for building user interfaces, which will allow you to create a responsive and dynamic web app.
-- **Redux**: For state management, to handle the complex state interactions in your app.
-- **Axios**: For making HTTP requests to your backend and the BoardGameGeek API.
-- **React Router**: For handling routing in your web app.
+- **React**: A popular JavaScript library for building user interfaces.
+- **Redux**: For state management, to handle the complex state interactions in the app.
+- **Axios**: For making HTTP requests to the backend and the BoardGameGeek API.
+- **React Router**: For handling routing in the web app.
+- **Tailwind CSS**: For styling components.
 
 ## Backend
 
@@ -163,7 +164,6 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] **Implement image caching - clear game images viewed less than a month ago? unless a new version is in search or import? store locally?**
 - [ ] Profile - Add game night history
 - [ ] Profile - Add game night calendar
-- [ ] Profile - Update Password functionality
 - [ ] Users/Profile - Secure passwords when updating and registering
 - [ ] Users - Emails for friend requests and game night invitations
 - [ ] Games - icons for best with, min/max players, min/max playtime
@@ -180,6 +180,7 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] Invitiations instead of open registration initially?
 - [ ] Develop mobile app versions (iOS/Android)
 - [ ] Add unit and integration tests
+- [x] Profile - Update Password functionality
 - [x] Profile - Forgot Password functionality
 - [x] Profile - Hide own games from Profile page
 - [x] Games - Store and display game weight
