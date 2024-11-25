@@ -149,7 +149,7 @@ const Profile = () => {
     e.preventDefault();
     
     if (!formData.currentPassword) {
-      setError('Current password is required to change password');
+      setError('Current password is required');
       showNotification('Current password is required', 'error');
       return;
     }
@@ -161,22 +161,25 @@ const Profile = () => {
     }
 
     try {
-      await api.put('/users/change-password', {
+      const response = await api.put('/users/change-password', {
         currentPassword: formData.currentPassword,
         newPassword: formData.newPassword
       });
       
-      // Clear password fields
-      setFormData(prev => ({
-        ...prev,
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      }));
-      
-      setError('');
-      showNotification('Password updated successfully!', 'success');
-      setIsEditing(false);
+      if (response.data.success) {
+        setFormData(prev => ({
+          ...prev,
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        }));
+        
+        setError('');
+        showNotification('Password updated successfully!', 'success');
+        setIsEditing(false);
+      } else {
+        throw new Error(response.data.message || 'Failed to update password');
+      }
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to update password');
       showNotification('Failed to update password', 'error');
