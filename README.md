@@ -162,24 +162,24 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 
 - [ ] **Implement some form of caching for api queries - store search results even if not in database?**
 - [ ] **Implement image caching - clear game images viewed less than a month ago? unless a new version is in search or import? store locally?**
-- [ ] Profile - Add game night history
-- [ ] Profile - Add game night calendar
-- [ ] Users/Profile - Secure passwords when updating and registering
 - [ ] Users - Emails for friend requests and game night invitations
 - [ ] Games - icons for best with, min/max players, min/max playtime
 - [ ] Game Night - Add game night creation and management features
 - [ ] Game Night - Integrate messaging system or real-time chat for game nights
 - [ ] Game Night - Implement voting system for game selection - random, ranked, weighted? This is optional, the game manager can pick the game(s) or make a poll
+- [ ] Profile - Add game night history
+- [ ] Profile - Add game night calendar
 - [ ] UI/UX - Sidebar for navigation w/ icons?
 - [ ] UI/UX - Utilise notification system for messages and errors
-- [ ] UI/UX - Consider profile and game list page skeletons while loading
-- [ ] Move common components to a shared library
+- [ ] UI/UX - Consider profile and game list page skeletons while loading - currently css, what about react-content-loader
+- [ ] Move other repeated featured to components
 - [ ] Turn game list into a Component to reuse on my games and friend profiles
 - [ ] Update stored game data from BGG API if changed during a search or import
 - [ ] oAuth? redux auth management?
 - [ ] Invitiations instead of open registration initially?
 - [ ] Develop mobile app versions (iOS/Android)
 - [ ] Add unit and integration tests
+- [x] Users/Profile - Secure passwords when updating and registering
 - [x] Profile - Update Password functionality
 - [x] Profile - Forgot Password functionality
 - [x] Profile - Hide own games from Profile page
