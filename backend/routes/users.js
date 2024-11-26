@@ -146,7 +146,7 @@ router.post('/register', async (req, res) => {
 
     console.log('Creating tokens...');
     const payload = { id: user.id, name: user.name, email: user.email };
-    const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: '15m' });
+    const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 3600 });
     const refreshToken = jwt.sign(payload, keys.secretOrKey, { expiresIn: '7d' });
 
     console.log('Registration successful');
@@ -200,7 +200,7 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       const payload = { id: user.id, name: user.name, email: user.email };
-      const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: '15m' });
+      const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: 3600 });
       const refreshToken = jwt.sign(payload, keys.secretOrKey, { expiresIn: '7d' });
       res.json({
         success: true,
@@ -427,7 +427,7 @@ router.post('/refresh-token', async (req, res) => {
       }
 
       const payload = { id: user.id, name: user.name, email: user.email };
-      const newToken = jwt.sign(payload, keys.secretOrKey, { expiresIn: 60 });
+      const newToken = jwt.sign(payload, keys.secretOrKey, { expiresIn: 3600 });
       const newRefreshToken = jwt.sign(payload, keys.secretOrKey, { expiresIn: '7d' });
 
       res.json({
