@@ -4,6 +4,7 @@ import api from '../utils/api';
 import { FaExternalLinkAlt, FaUser, FaCamera, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
+import PasswordValidationForm from '../components/PasswordValidationForm';
 
 const Profile = () => {
   const {userId} = useParams();
@@ -372,61 +373,16 @@ const Profile = () => {
             <div className="border-t mt-4 pt-4">
               <h3 className="text-lg font-medium mb-4">Change Password</h3>
               
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                    Current Password
-                  </label>
-                  <input
-                    id="currentPassword"
-                    name="currentPassword"
-                    type="password"
-                    value={formData.currentPassword}
-                    onChange={handleInputChange}
-                    className="border p-2 rounded w-full"
-                    aria-label="Current password"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                    New Password
-                  </label>
-                  <input
-                    id="newPassword"
-                    name="newPassword"
-                    type="password"
-                    value={formData.newPassword}
-                    onChange={handleInputChange}
-                    className="border p-2 rounded w-full"
-                    aria-label="New password"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                    Confirm Password
-                  </label>
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    className="border p-2 rounded w-full"
-                    aria-label="Confirm password"
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handlePasswordChange}
-                  className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                  disabled={!formData.currentPassword || !formData.newPassword || !formData.confirmPassword}
-                >
-                  Update Password
-                </button>
-              </div>
+              <PasswordValidationForm
+                newPassword={formData.newPassword}
+                confirmPassword={formData.confirmPassword}
+                currentPassword={formData.currentPassword}
+                showCurrentPassword={true}
+                onPasswordChange={handleInputChange}
+                onSubmit={handlePasswordChange}
+                submitButtonText="Update Password"
+                isLoading={isLoading}
+              />
             </div>
 
             {error && <p className="text-red-500 text-sm">{error}</p>}

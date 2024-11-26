@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
+import PasswordValidationForm from '../components/PasswordValidationForm';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -10,41 +11,57 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
   const { login } = useAuth();
   const { showNotification } = useNotification();
 
   const handleSubmit = async (e) => {
+    console.log('handleSubmit called');
+    
     e.preventDefault();
     setError('');
-
-    // Frontend validation
-    const sanitizedName = name.trim();
-    if (sanitizedName.length < 1 || sanitizedName.length > 50) {
-      setError('Name must be between 1 and 50 characters');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+    setIsLoading(true);
 
     try {
-      const response = await api.post('/users/register', { 
-        name: sanitizedName, 
-        email, 
-        password 
+      const sanitizedName = name.trim();
+      if (sanitizedName.length < 1 || sanitizedName.length > 50) {
+        console.log('Name validation failed');
+        setError('Name must be between 1 and 50 characters');
+        setIsLoading(false);
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        console.log('Password validation failed');
+        setError('Passwords do not match');
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('Registration payload:', {
+        name: sanitizedName,
+        email,
+        password: password.length
       });
-      
+
+      const response = await api.post('/users/register', {
+        name: sanitizedName,
+        email,
+        password
+      });
+
       if (response.data.success) {
+        showNotification('Registration successful!', 'success');
         await login(email, password);
-        showNotification('Registration successful!');
         history.push('/profile');
       }
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Registration error:', error.response?.data || error.message);
       setError(error.response?.data?.message || 'Registration failed');
+      showNotification('Registration failed', 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -80,33 +97,19 @@ const Register = () => {
             aria-label="Email"
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Password:</label>
-          <input
-            name="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="new-password"
-            className="border p-2 rounded w-full"
-            aria-label="Password"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Confirm Password:</label>
-          <input
-            name="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            autoComplete="new-password"
-            className="border p-2 rounded w-full"
-            aria-label="Confirm password"
-          />
-        </div>
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded" aria-label="Register">Register</button>
+        <PasswordValidationForm
+          newPassword={password}
+          confirmPassword={confirmPassword}
+          showCurrentPassword={false}
+          onPasswordChange={(e) => {
+            const { name, value } = e.target;
+            if (name === 'newPassword') setPassword(value);
+            if (name === 'confirmPassword') setConfirmPassword(value);
+          }}
+          onSubmit={handleSubmit}
+          submitButtonText="Register"
+          isLoading={isLoading}
+        />
       </form>
     </div>
   );

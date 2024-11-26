@@ -14,7 +14,8 @@ const UserSchema = new Schema({
   },
   bggUsername: {
     type: String,
-    unique: true
+    unique: true,
+    sparse: true
   },
   password: {
     type: String,

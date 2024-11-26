@@ -13,6 +13,7 @@ const path = require('path');
 const fs = require('fs');
 const sharp = require('sharp');
 const fsPromises = require('fs').promises;
+const { validatePassword } = require('../utils/passwordValidation');
 
 const router = express.Router();
 
@@ -86,42 +87,103 @@ const processImage = async (req, res, next) => {
 
 // Register route
 router.post('/register', async (req, res) => {
-  let { name, email, password } = req.body;
+  console.log('Register route called with body:', {
+    name: req.body.name,
+    email: req.body.email,
+    passwordLength: req.body?.password?.length || 0
+  });
 
   try {
-    // Sanitize and validate name
-    name = xss(name.trim());
-    if (name.length < 1 || name.length > 50) {
+    const { name, email, password } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !password) {
+      console.log('Missing required fields:', { name: !!name, email: !!email, password: !!password });
       return res.status(400).json({
         success: false,
-        message: 'Name must be between 1 and 50 characters'
+        message: 'All fields are required'
       });
     }
 
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ email: 'Email already exists' });
+    // Check if user already exists
+    console.log('Checking for existing user with email:', email);
+    const existingUser = await User.findOne({ email });
+    console.log('Existing user check result:', existingUser);
+    if (existingUser) {
+      console.log('Email already registered:', email);
+      return res.status(400).json({
+        success: false,
+        message: 'Email already registered'
+      });
     }
 
-    user = new User({ name, email, password });
+    // Validate password
+    const { isValid, errors } = validatePassword(password);
+    if (!isValid) {
+      console.log('Password validation failed:', errors);
+      return res.status(400).json({
+        success: false,
+        message: errors.join(', ')
+      });
+    }
 
+    // Log steps for debugging
+    console.log('Creating salt...');
     const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
 
+    console.log('Hashing password...');
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    console.log('Creating new user...');
+    const user = new User({
+      name,
+      email,
+      password: hashedPassword
+    });
+
+    console.log('Saving user...');
     await user.save();
 
+    console.log('Creating tokens...');
     const payload = { id: user.id, name: user.name, email: user.email };
     const token = jwt.sign(payload, keys.secretOrKey, { expiresIn: '15m' });
     const refreshToken = jwt.sign(payload, keys.secretOrKey, { expiresIn: '7d' });
 
-    res.json({
+    console.log('Registration successful');
+    res.status(201).json({
       success: true,
+      message: 'Registration successful',
       token: `Bearer ${token}`,
-      refreshToken: refreshToken
+      refreshToken
     });
+
   } catch (error) {
-    console.error('There was an error registering the user!', error);
-    res.status(500).json({ success: false, message: 'Server error' });
+    console.error('Registration error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      code: error.code,
+      keyPattern: error.keyPattern,
+      keyValue: error.keyValue
+    });
+
+    // Handle duplicate key errors
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      return res.status(400).json({
+        success: false,
+        message: field === 'email'
+          ? 'Email already exists'
+          : `Duplicate value for ${field}`
+      });
+    }
+
+    // For all other errors
+    res.status(500).json({
+      success: false,
+      message: 'Server error during registration',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
