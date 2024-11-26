@@ -7,6 +7,7 @@ const users = require('./routes/users');
 const games = require('./routes/games');
 const friends = require('./routes/friends');
 const authRoutes = require('./routes/auth');
+const gameNights = require('./routes/gameNights');
 const path = require('path');
 const compression = require('compression');
 
@@ -41,6 +42,7 @@ app.use('/api/users', users);
 app.use('/api/games', games);
 app.use('/api/friends', friends);
 app.use('/api/auth', authRoutes);
+app.use('/api/gameNights', gameNights);
 
 // Add this before the static file middleware
 app.use('/uploads/profiles', (req, res, next) => {

@@ -15,6 +15,7 @@ const Navbar = () => {
         {/* Left side navigation */}
         <ul className="flex space-x-4 list-none p-0">
           {/* <li><Link to="/" className="text-white hover:text-gray-300">Home</Link></li> */}
+          {isLoggedIn && <li><Link to="/game-nights" className="text-white hover:text-gray-300">Game Nights</Link></li>}
           {isLoggedIn && <li><Link to="/games" className="text-white hover:text-gray-300">Games</Link></li>}
           {isLoggedIn && <li><Link to="/friends" className="text-white hover:text-gray-300">Friends</Link></li>}
         </ul>

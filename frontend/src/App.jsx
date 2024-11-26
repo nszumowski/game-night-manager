@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-d
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import GameNight from './pages/GameNight';
+import GameNights from './pages/GameNights';
 import Profile from './pages/Profile';
 import Logout from './pages/Logout';
 import Games from './pages/Games';
@@ -50,7 +50,8 @@ function App() {
               <Route path="/login" component={Login} />
               <Route path="/register" component={Register} />
               <Route path="/logout" component={Logout} />
-              <PrivateRoute path="/game-night/:id" component={GameNight} />
+              <PrivateRoute path="/game-nights" exact component={GameNights} />
+              <PrivateRoute path="/game-nights/:id" component={GameNights} />
               <PrivateRoute path="/games" component={Games} />
               <PrivateRoute path="/friends" component={Friends} />
               <PrivateRoute path="/profile/:userId?" component={Profile} />
