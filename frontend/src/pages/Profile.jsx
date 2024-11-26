@@ -10,6 +10,7 @@ const Profile = () => {
   const {userId} = useParams();
   const { user, setUser, loading } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -148,20 +149,20 @@ const Profile = () => {
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-    
-    if (!formData.currentPassword) {
-      setError('Current password is required');
-      showNotification('Current password is required', 'error');
-      return;
-    }
-    
-    if (formData.newPassword !== formData.confirmPassword) {
-      setError('New passwords do not match');
-      showNotification('New passwords do not match', 'error');
-      return;
-    }
-
+    setIsLoading(true);
     try {
+      if (!formData.currentPassword) {
+        setError('Current password is required');
+        showNotification('Current password is required', 'error');
+        return;
+      }
+      
+      if (formData.newPassword !== formData.confirmPassword) {
+        setError('New passwords do not match');
+        showNotification('New passwords do not match', 'error');
+        return;
+      }
+
       const response = await api.put('/users/change-password', {
         currentPassword: formData.currentPassword,
         newPassword: formData.newPassword
@@ -184,6 +185,8 @@ const Profile = () => {
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to update password');
       showNotification('Failed to update password', 'error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -476,12 +479,12 @@ const Profile = () => {
       {!isOwnProfile && (
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4">
-            {`${profileData?.name}'s Games`} ({userGames.length})
+            {`${profileData?.name}'s Games`} ({userGames?.length || 0})
           </h2>
-          {userGames.length > 0 ? (
+          {userGames?.length > 0 ? (
             <ul className="list-none pl-0">
               {userGames.map((game) => {
-                const iSharedGame = myGames.some(myGame => myGame.bggId === game.bggId);
+                const iSharedGame = myGames?.some(myGame => myGame.bggId === game.bggId);
                 return (
                   <li key={game._id} className="flex items-center justify-between border-b py-2">
                     <div className="flex items-center">

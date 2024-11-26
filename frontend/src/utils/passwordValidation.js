@@ -1,10 +1,10 @@
-const checkPasswordRequirements = (newPassword, confirmPassword = '') => {
+const checkPasswordRequirements = (newPassword = '', confirmPassword = '') => {
   return {
-    minLength: newPassword.length >= 8,
-    hasUpperCase: /[A-Z]/.test(newPassword),
-    hasLowerCase: /[a-z]/.test(newPassword),
-    hasNumbers: /\d/.test(newPassword),
-    hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword),
+    minLength: (newPassword || '').length >= 8,
+    hasUpperCase: /[A-Z]/.test(newPassword || ''),
+    hasLowerCase: /[a-z]/.test(newPassword || ''),
+    hasNumbers: /\d/.test(newPassword || ''),
+    hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword || ''),
     newConfirmMatch: newPassword === confirmPassword
   };
 };

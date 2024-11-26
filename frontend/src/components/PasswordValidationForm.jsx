@@ -3,10 +3,10 @@ import { FaCheck, FaTimes } from 'react-icons/fa';
 import { checkPasswordRequirements } from '../utils/passwordValidation';
 
 const PasswordValidationForm = ({ 
-  newPassword, 
-  confirmPassword, 
+  newPassword = '',
+  confirmPassword = '', 
   showCurrentPassword = false, 
-  currentPassword,
+  currentPassword = '',
   onPasswordChange,
   onSubmit,
   submitButtonText,
