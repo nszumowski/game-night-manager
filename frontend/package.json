@@ -1,6 +1,6 @@
 {
   "name": "game-night-manager-frontend",
-  "version": "1.0.0",
+  "version": "0.9.0",
   "description": "Frontend for Game Night Manager",
   "main": "index.js",
   "scripts": {
