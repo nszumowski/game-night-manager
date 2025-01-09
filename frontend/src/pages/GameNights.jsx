@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNotification } from '../contexts/NotificationContext';
 import CreateGameNightForm from '../components/CreateGameNightForm';
 import api from '../utils/api';
+import { Link } from 'react-router-dom';
 
 const GameNights = () => {
   const { showNotification } = useNotification();
@@ -74,13 +75,25 @@ const GameNights = () => {
         <p className="text-gray-600">No {isPast ? 'past' : 'upcoming'} game nights</p>
       ) : (
         nights.map(night => (
-          <div key={night._id} className="border p-4 rounded-lg shadow">
-            <h3 className="font-bold">{night.title}</h3>
-            <p className="text-gray-600">
-              {new Date(night.date).toLocaleDateString()} at {night.location}
-            </p>
-            <p className="text-gray-700 mt-2">{night.description}</p>
-          </div>
+          <Link
+            to={`/game-nights/${night._id}`}
+            key={night._id}
+            className="block border p-4 rounded-lg shadow hover:shadow-md transition-shadow"
+          >
+            <div>
+              <h3 className="font-bold text-xl text-blue-600">{night.title}</h3>
+              <p className="text-gray-600">
+                {new Date(night.date).toLocaleDateString()} at {night.location}
+              </p>
+              <p className="text-gray-700 mt-2">{night.description}</p>
+              <div className="mt-2 flex items-center text-sm text-gray-500">
+                <span className="mr-4">
+                  Players: {night.invitees.filter(inv => inv.status === 'accepted').length + 1}/{night.maxPlayers}
+                </span>
+                <span>Click to view details →</span>
+              </div>
+            </div>
+          </Link>
         ))
       )}
     </div>

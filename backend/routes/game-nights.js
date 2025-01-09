@@ -57,4 +57,32 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
   }
 });
 
+// Get single game night
+router.get('/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const gameNight = await GameNight.findById(req.params.id)
+      .populate('host', 'name email')
+      .populate('invitees.user', 'name email');
+
+    if (!gameNight) {
+      return res.status(404).json({ message: 'Game night not found' });
+    }
+
+    // Check if user has permission to view this game night
+    const isHost = gameNight.host._id.toString() === req.user._id.toString();
+    const isInvited = gameNight.invitees.some(invite =>
+      invite.user._id.toString() === req.user._id.toString()
+    );
+
+    if (!isHost && !isInvited) {
+      return res.status(403).json({ message: 'Not authorized to view this game night' });
+    }
+
+    res.json({ gameNight });
+  } catch (error) {
+    console.error('Error fetching game night:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router; 

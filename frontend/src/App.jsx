@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import GameNights from './pages/GameNights';
+import GameNightDetails from './pages/GameNightDetails';
 import Profile from './pages/Profile';
 import Logout from './pages/Logout';
 import Games from './pages/Games';
@@ -19,7 +20,7 @@ import ResetPassword from './pages/ResetPassword';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const { isLoggedIn, loading } = useAuth();
-  
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -51,7 +52,7 @@ function App() {
               <Route path="/register" component={Register} />
               <Route path="/logout" component={Logout} />
               <PrivateRoute path="/game-nights" exact component={GameNights} />
-              <PrivateRoute path="/game-nights/:id" component={GameNights} />
+              <PrivateRoute path="/game-nights/:id" component={GameNightDetails} />
               <PrivateRoute path="/games" component={Games} />
               <PrivateRoute path="/friends" component={Friends} />
               <PrivateRoute path="/profile/:userId?" component={Profile} />
