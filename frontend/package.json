@@ -1,7 +1,9 @@
 {
   "name": "game-night-manager-frontend",
-  "version": "0.9.0",
   "description": "Frontend for Game Night Manager",
+  "version": "0.9.0",
+  "author": "Nicholas Szumowski",
+  "license": "Proprietary",
   "main": "index.js",
   "scripts": {
     "start": "vite",
@@ -27,8 +29,6 @@
     "@vitejs/plugin-react": "^1.0.0",
     "vite": "^2.0.0"
   },
-  "author": "Nicholas Szumowski",
-  "license": "Proprietary",
   "browserslist": {
     "production": [
       ">0.2%",

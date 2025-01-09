@@ -1,7 +1,9 @@
 {
   "name": "game-night-manager-backend",
-  "version": "0.9.0",
   "description": "Backend for Game Night Manager",
+  "version": "0.9.0",
+  "author": "Nicholas Szumowski",
+  "license": "Proprietary",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -28,7 +30,5 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
-  },
-  "author": "Nicholas Szumowski",
-  "license": "Proprietary"
+  }
 }
