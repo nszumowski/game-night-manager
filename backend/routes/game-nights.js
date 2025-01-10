@@ -85,4 +85,69 @@ router.get('/:id', passport.authenticate('jwt', { session: false }), async (req,
   }
 });
 
+// Update game night
+router.put('/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const gameNight = await GameNight.findById(req.params.id);
+
+    if (!gameNight) {
+      return res.status(404).json({ message: 'Game night not found' });
+    }
+
+    // Check if user is the host
+    if (gameNight.host.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Only the host can edit game nights' });
+    }
+
+    // Update fields
+    const updatableFields = [
+      'title',
+      'date',
+      'location',
+      'description',
+      'maxPlayers'
+    ];
+
+    updatableFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        gameNight[field] = req.body[field];
+      }
+    });
+
+    await gameNight.save();
+
+    // Fetch updated game night with populated fields
+    const updatedGameNight = await GameNight.findById(req.params.id)
+      .populate('host', 'name email')
+      .populate('invitees.user', 'name email');
+
+    res.json({ gameNight: updatedGameNight });
+  } catch (error) {
+    console.error('Error updating game night:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Delete game night
+router.delete('/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const gameNight = await GameNight.findById(req.params.id);
+
+    if (!gameNight) {
+      return res.status(404).json({ message: 'Game night not found' });
+    }
+
+    // Check if user is the host
+    if (gameNight.host.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Only the host can delete game nights' });
+    }
+
+    await gameNight.remove();
+    res.json({ message: 'Game night deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting game night:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router; 

@@ -10,9 +10,7 @@ const CreateGameNightForm = ({ onSuccess }) => {
     location: '',
     description: '',
     maxPlayers: 8,
-    gameOptions: [],
-    snacks: '',
-    notes: ''
+    gameOptions: []
   });
 
   const handleSubmit = async (e) => {
@@ -27,9 +25,7 @@ const CreateGameNightForm = ({ onSuccess }) => {
           location: '',
           description: '',
           maxPlayers: 8,
-          gameOptions: [],
-          snacks: '',
-          notes: ''
+          gameOptions: []
         });
         onSuccess();
       }
@@ -93,28 +89,6 @@ const CreateGameNightForm = ({ onSuccess }) => {
           onChange={(e) => setGameNight({ ...gameNight, description: e.target.value })}
           className="w-full border rounded px-3 py-2"
           rows="3"
-        />
-      </div>
-
-      <div>
-        <label className="block text-gray-700 mb-2">Snacks (optional)</label>
-        <textarea
-          value={gameNight.snacks}
-          onChange={(e) => setGameNight({ ...gameNight, snacks: e.target.value })}
-          className="w-full border rounded px-3 py-2"
-          rows="2"
-          placeholder="List any snacks or drinks you'll provide or that guests should bring"
-        />
-      </div>
-
-      <div>
-        <label className="block text-gray-700 mb-2">Additional Notes</label>
-        <textarea
-          value={gameNight.notes}
-          onChange={(e) => setGameNight({ ...gameNight, notes: e.target.value })}
-          className="w-full border rounded px-3 py-2"
-          rows="3"
-          placeholder="Any additional information for your guests"
         />
       </div>
 
