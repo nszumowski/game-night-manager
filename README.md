@@ -179,6 +179,7 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] Invitiations instead of open registration initially?
 - [ ] Develop mobile app versions (iOS/Android)
 - [ ] Add unit and integration tests
+- [ ] Use same email util for forgot password or anything else as used with game night invitations
 - [x] Users/Profile - Secure passwords when updating and registering
 - [x] Profile - Update Password functionality
 - [x] Profile - Forgot Password functionality
