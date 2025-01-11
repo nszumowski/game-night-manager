@@ -14,20 +14,23 @@ const FriendSelector = ({ friends, onSelectionChange, existingInvites = [] }) =>
   );
 
   useEffect(() => {
-    // Initialize with existing accepted invitees
-    const initialSelection = new Set(
-      existingInvites
-        .filter(invite => invite.status === 'accepted')
-        .map(invite => invite.user._id)
-    );
-    setSelectedFriends(initialSelection);
-    onSelectionChange(Array.from(initialSelection));
+    // Only initialize from existingInvites if there are any
+    if (existingInvites.length > 0) {
+      const initialSelection = new Set(
+        existingInvites
+          .filter(invite => invite.status === 'accepted')
+          .map(invite => invite.user._id)
+      );
+      setSelectedFriends(initialSelection);
+      onSelectionChange(Array.from(initialSelection));
+    }
   }, [existingInvites]);
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
-      setSelectedFriends(new Set(friends.map(friend => friend._id)));
-      onSelectionChange(friends.map(friend => friend._id));
+      const newSelection = new Set(availableFriends.map(friend => friend._id));
+      setSelectedFriends(newSelection);
+      onSelectionChange(Array.from(newSelection));
     } else {
       setSelectedFriends(new Set());
       onSelectionChange([]);
@@ -53,7 +56,7 @@ const FriendSelector = ({ friends, onSelectionChange, existingInvites = [] }) =>
           id="selectAll"
           className="h-4 w-4 text-blue-600"
           onChange={handleSelectAll}
-          checked={selectedFriends.size === friends.length}
+          checked={selectedFriends.size === availableFriends.length}
         />
         <label htmlFor="selectAll" className="ml-2 text-gray-700">
           Select All Friends
@@ -61,7 +64,7 @@ const FriendSelector = ({ friends, onSelectionChange, existingInvites = [] }) =>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {friends.map(friend => (
+        {availableFriends.map(friend => (
           <div key={friend._id} className="flex items-center space-x-3 p-2 border rounded">
             <input
               type="checkbox"
