@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useNotification } from '../contexts/NotificationContext';
 import api from '../utils/api';
+import FriendSelector from '../components/FriendSelector';
+import InvitationStatus from '../components/InvitationStatus';
 
 const GameNightDetails = () => {
   const { id } = useParams();
@@ -12,6 +14,8 @@ const GameNightDetails = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedGameNight, setEditedGameNight] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [friends, setFriends] = useState([]);
+  const [selectedFriends, setSelectedFriends] = useState([]);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -26,20 +30,35 @@ const GameNightDetails = () => {
   }, []);
 
   useEffect(() => {
-    fetchGameNightDetails();
+    const fetchData = async () => {
+      try {
+        const [gameNightResponse, friendsResponse] = await Promise.all([
+          api.get(`/game-nights/${id}`),
+          api.get('/friends/list')
+        ]);
+        setGameNight(gameNightResponse.data.gameNight);
+        setFriends(friendsResponse.data.friends);
+        setSelectedFriends(
+          gameNightResponse.data.gameNight.invitees.map(inv => inv.user._id)
+        );
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        showNotification('Error loading game night details', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, [id]);
 
-  const fetchGameNightDetails = async () => {
-    try {
-      const response = await api.get(`/game-nights/${id}`);
-      setGameNight(response.data.gameNight);
-      setEditedGameNight(response.data.gameNight);
-    } catch (error) {
-      console.error('Error fetching game night details:', error);
-      showNotification('Failed to load game night details', 'error');
-    } finally {
-      setLoading(false);
-    }
+  const handleEditClick = () => {
+    setEditedGameNight({
+      title: gameNight.title,
+      date: gameNight.date,
+      location: gameNight.location,
+      description: gameNight.description
+    });
+    setIsEditing(true);
   };
 
   const isHost = gameNight?.host._id === currentUserId;
@@ -47,7 +66,10 @@ const GameNightDetails = () => {
   const handleEdit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.put(`/game-nights/${id}`, editedGameNight);
+      const response = await api.put(`/game-nights/${id}`, {
+        ...editedGameNight,
+        invitees: selectedFriends
+      });
       setGameNight(response.data.gameNight);
       setIsEditing(false);
       showNotification('Game night updated successfully!');
@@ -76,6 +98,11 @@ const GameNightDetails = () => {
     }
   };
 
+  const handleCancelEdit = () => {
+    setEditedGameNight(null);
+    setIsEditing(false);
+  };
+
   if (loading) {
     return <div className="container mx-auto p-4">Loading...</div>;
   }
@@ -93,7 +120,7 @@ const GameNightDetails = () => {
         {isHost && (
           <div className="space-x-2">
             <button
-              onClick={() => setIsEditing(!isEditing)}
+              onClick={handleEditClick}
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
               {isEditing ? 'Cancel Edit' : 'Edit'}
@@ -155,10 +182,19 @@ const GameNightDetails = () => {
                 />
               </div>
 
+              <div>
+                <label className="block text-gray-700 mb-2">Invite Friends</label>
+                <FriendSelector
+                  friends={friends}
+                  onSelectionChange={setSelectedFriends}
+                  existingInvites={gameNight.invitees}
+                />
+              </div>
+
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
-                  onClick={() => setIsEditing(false)}
+                  onClick={handleCancelEdit}
                   className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                 >
                   Cancel
@@ -197,18 +233,9 @@ const GameNightDetails = () => {
 
               <div className="mt-6">
                 <h2 className="text-xl font-semibold mb-4">Attendees</h2>
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <p className="font-medium">Host: {gameNight.host.name}</p>
-                  <div className="mt-2">
-                    <h3 className="font-medium mb-2">Guests:</h3>
-                    <ul className="list-disc list-inside space-y-1">
-                      {gameNight.invitees
-                        .filter(inv => inv.status === 'accepted')
-                        .map(inv => (
-                          <li key={inv.user._id}>{inv.user.name}</li>
-                        ))}
-                    </ul>
-                  </div>
+                  <InvitationStatus invitees={gameNight.invitees} />
                 </div>
               </div>
             </>

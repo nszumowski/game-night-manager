@@ -2,21 +2,46 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const GameNight = require('../models/GameNight');
+const User = require('../models/User');
+// const sendEmail = require('../utils/sendEmail');
 
 // Create a new game night
 router.post('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
-    const { title, date, location, description } = req.body;
+    const { title, date, location, description, invitees } = req.body;
 
     const gameNight = new GameNight({
       title,
       date,
       location,
       description,
-      host: req.user.id
+      host: req.user.id,
+      invitees: invitees.map(userId => ({
+        user: userId,
+        status: 'pending'
+      }))
     });
 
     await gameNight.save();
+
+    // Send email notifications to invitees
+    // const invitedUsers = await User.find({ _id: { $in: invitees } });
+    // for (const user of invitedUsers) {
+    //   await sendEmail({
+    //     to: user.email,
+    //     subject: `Game Night Invitation: ${title}`,
+    //     text: `
+    //       You've been invited to a game night!
+
+    //       Title: ${title}
+    //       Date: ${new Date(date).toLocaleString()}
+    //       Location: ${location}
+    //       Host: ${req.user.name}
+
+    //       Log in to Game Night Manager to respond to this invitation.
+    //     `
+    //   });
+    // }
 
     res.status(201).json({
       success: true,
@@ -99,19 +124,30 @@ router.put('/:id', passport.authenticate('jwt', { session: false }), async (req,
       return res.status(403).json({ message: 'Only the host can edit game nights' });
     }
 
-    // Update fields
-    const updatableFields = [
-      'title',
-      'date',
-      'location',
-      'description'
-    ];
-
+    // Update basic fields
+    const updatableFields = ['title', 'date', 'location', 'description'];
     updatableFields.forEach(field => {
       if (req.body[field] !== undefined) {
         gameNight[field] = req.body[field];
       }
     });
+
+    // Update invitees if provided
+    if (req.body.invitees) {
+      // Keep existing accepted/declined invitees
+      const existingInvitees = gameNight.invitees.filter(invite =>
+        invite.status !== 'pending' &&
+        !req.body.invitees.includes(invite.user.toString())
+      );
+
+      // Add new invitees
+      const newInvitees = req.body.invitees.map(userId => ({
+        user: userId,
+        status: 'pending'
+      }));
+
+      gameNight.invitees = [...existingInvitees, ...newInvitees];
+    }
 
     await gameNight.save();
 
