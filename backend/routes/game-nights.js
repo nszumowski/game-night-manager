@@ -131,22 +131,33 @@ router.put('/:id', passport.authenticate('jwt', { session: false }), async (req,
 // Delete game night
 router.delete('/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
   try {
+    // Add logging
+    console.log('Delete request received for game night:', req.params.id);
+    console.log('User ID:', req.user._id);
+
     const gameNight = await GameNight.findById(req.params.id);
 
     if (!gameNight) {
+      console.log('Game night not found');
       return res.status(404).json({ message: 'Game night not found' });
     }
 
     // Check if user is the host
     if (gameNight.host.toString() !== req.user._id.toString()) {
+      console.log('Unauthorized delete attempt');
       return res.status(403).json({ message: 'Only the host can delete game nights' });
     }
 
-    await gameNight.remove();
+    await GameNight.findByIdAndDelete(req.params.id);
+    console.log('Game night deleted successfully');
+
     res.json({ message: 'Game night deleted successfully' });
   } catch (error) {
-    console.error('Error deleting game night:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error in delete route:', error);
+    res.status(500).json({
+      message: 'Server error',
+      error: error.message
+    });
   }
 });
 

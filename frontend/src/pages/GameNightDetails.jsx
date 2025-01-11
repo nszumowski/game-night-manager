@@ -60,11 +60,17 @@ const GameNightDetails = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this game night?')) {
       try {
+        console.log('Attempting to delete game night:', id);
+
         await api.delete(`/game-nights/${id}`);
-        showNotification('Game night deleted successfully!');
         navigate('/game-nights');
+        showNotification('Game night deleted successfully', 'success');
       } catch (error) {
         console.error('Error deleting game night:', error);
+        if (error.response) {
+          console.error('Error response:', error.response.data);
+          console.error('Error status:', error.response.status);
+        }
         showNotification('Failed to delete game night', 'error');
       }
     }
