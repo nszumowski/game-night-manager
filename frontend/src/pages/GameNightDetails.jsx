@@ -120,7 +120,7 @@ const GameNightDetails = () => {
         {isHost && (
           <div className="space-x-2">
             <button
-              onClick={handleEditClick}
+              onClick={isEditing ? handleCancelEdit : handleEditClick}
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
               {isEditing ? 'Cancel Edit' : 'Edit'}
