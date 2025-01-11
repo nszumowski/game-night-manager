@@ -87,9 +87,6 @@ const GameNights = () => {
               </p>
               <p className="text-gray-700 mt-2">{night.description}</p>
               <div className="mt-2 flex items-center text-sm text-gray-500">
-                <span className="mr-4">
-                  Players: {night.invitees.filter(inv => inv.status === 'accepted').length + 1}/{night.maxPlayers}
-                </span>
                 <span>Click to view details →</span>
               </div>
             </div>

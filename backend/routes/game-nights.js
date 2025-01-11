@@ -104,8 +104,7 @@ router.put('/:id', passport.authenticate('jwt', { session: false }), async (req,
       'title',
       'date',
       'location',
-      'description',
-      'maxPlayers'
+      'description'
     ];
 
     updatableFields.forEach(field => {

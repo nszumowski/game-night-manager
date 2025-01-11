@@ -9,7 +9,6 @@ const CreateGameNightForm = ({ onSuccess }) => {
     date: '',
     location: '',
     description: '',
-    maxPlayers: 8,
     gameOptions: []
   });
 
@@ -24,7 +23,6 @@ const CreateGameNightForm = ({ onSuccess }) => {
           date: '',
           location: '',
           description: '',
-          maxPlayers: 8,
           gameOptions: []
         });
         onSuccess();
@@ -66,18 +64,6 @@ const CreateGameNightForm = ({ onSuccess }) => {
           value={gameNight.location}
           onChange={(e) => setGameNight({ ...gameNight, location: e.target.value })}
           className="w-full border rounded px-3 py-2"
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-gray-700 mb-2">Maximum Players</label>
-        <input
-          type="number"
-          value={gameNight.maxPlayers}
-          onChange={(e) => setGameNight({ ...gameNight, maxPlayers: parseInt(e.target.value) })}
-          className="w-full border rounded px-3 py-2"
-          min="2"
           required
         />
       </div>

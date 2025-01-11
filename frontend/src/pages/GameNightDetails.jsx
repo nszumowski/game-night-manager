@@ -146,18 +146,6 @@ const GameNightDetails = () => {
               </div>
 
               <div>
-                <label className="block text-gray-700 mb-2">Maximum Players</label>
-                <input
-                  type="number"
-                  value={editedGameNight.maxPlayers}
-                  onChange={(e) => setEditedGameNight({ ...editedGameNight, maxPlayers: parseInt(e.target.value) })}
-                  className="w-full border rounded px-3 py-2"
-                  min="2"
-                  required
-                />
-              </div>
-
-              <div>
                 <label className="block text-gray-700 mb-2">Description</label>
                 <textarea
                   value={editedGameNight.description}
@@ -197,10 +185,6 @@ const GameNightDetails = () => {
                     </p>
                     <p>
                       <span className="font-medium">Location:</span> {gameNight.location}
-                    </p>
-                    <p>
-                      <span className="font-medium">Players:</span>{' '}
-                      {gameNight.invitees.filter(inv => inv.status === 'accepted').length + 1}/{gameNight.maxPlayers}
                     </p>
                   </div>
                 </div>
