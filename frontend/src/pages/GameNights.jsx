@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 
 const GameNights = () => {
   const { showNotification } = useNotification();
+  const [allGameNights, setAllGameNights] = useState([]);
   const [gameNights, setGameNights] = useState({
     invitations: [],
     upcoming: [],
@@ -13,28 +14,49 @@ const GameNights = () => {
   });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('upcoming');
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const now = new Date();
 
   useEffect(() => {
-    fetchGameNights();
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await api.get('/users/profile');
+        setCurrentUserId(response.data.user.id);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+    };
+    fetchCurrentUser();
   }, []);
+
+  useEffect(() => {
+    if (currentUserId) {
+      fetchGameNights();
+    }
+  }, [currentUserId]);
 
   const fetchGameNights = async () => {
     try {
       const response = await api.get('/game-nights');
       const allGameNights = response.data.gameNights;
 
-      // Sort game nights into categories
-      const now = new Date();
       const categorizedNights = {
         invitations: allGameNights.filter(night =>
           night.invitees.some(invite =>
-            invite.user._id === localStorage.getItem('userId') &&
+            invite.user._id === currentUserId &&
             invite.status === 'pending'
           )
         ),
         upcoming: allGameNights.filter(night =>
           new Date(night.date) > now &&
-          night.status === 'upcoming'
+          night.status === 'upcoming' &&
+          (
+            night.host._id === currentUserId ||
+            night.invitees.some(invite =>
+              invite.user._id === currentUserId &&
+              invite.status === 'accepted'
+            )
+          )
         ),
         past: allGameNights.filter(night =>
           new Date(night.date) < now ||

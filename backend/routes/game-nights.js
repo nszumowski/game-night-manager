@@ -196,4 +196,36 @@ router.delete('/:id', passport.authenticate('jwt', { session: false }), async (r
   }
 });
 
+// Respond to game night invitation
+router.post('/:id/respond', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    const { status } = req.body;
+    const gameNight = await GameNight.findById(req.params.id);
+
+    if (!gameNight) {
+      return res.status(404).json({ message: 'Game night not found' });
+    }
+
+    const invitee = gameNight.invitees.find(
+      inv => inv.user.toString() === req.user.id
+    );
+
+    if (!invitee) {
+      return res.status(403).json({ message: 'Not invited to this game night' });
+    }
+
+    invitee.status = status;
+    await gameNight.save();
+
+    const updatedGameNight = await GameNight.findById(req.params.id)
+      .populate('host', 'name email')
+      .populate('invitees.user', 'name email');
+
+    res.json({ gameNight: updatedGameNight });
+  } catch (error) {
+    console.error('Error responding to invitation:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router; 
