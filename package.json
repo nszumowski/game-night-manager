@@ -6,7 +6,7 @@
   "license": "Proprietary",
   "private": true,
   "scripts": {
-    "rebuild": "docker-compose down && docker-compose build --no-cache && docker-compose up -d"
+    "rebuild": "docker-compose down && docker-compose build --no-cache && docker-compose up -d && docker-compose ps"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0"
