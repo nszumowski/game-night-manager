@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useHistory } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useNotification } from '../contexts/NotificationContext';
 import api from '../utils/api';
 
 const GameNightDetails = () => {
   const { id } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { showNotification } = useNotification();
   const [gameNight, setGameNight] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -62,7 +62,7 @@ const GameNightDetails = () => {
       try {
         await api.delete(`/game-nights/${id}`);
         showNotification('Game night deleted successfully!');
-        history.push('/game-nights');
+        navigate('/game-nights');
       } catch (error) {
         console.error('Error deleting game night:', error);
         showNotification('Failed to delete game night', 'error');

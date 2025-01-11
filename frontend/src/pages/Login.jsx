@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
 
@@ -10,7 +10,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +20,7 @@ const Login = () => {
     try {
       await login(email, password);
       showNotification('Successfully logged in!');
-      history.push('/profile');
+      navigate('/profile');
     } catch (error) {
       console.error('Login submission error:', error);
       setError(error.response?.data?.message || 'Login failed. Please try again.');
@@ -66,15 +66,15 @@ const Login = () => {
           />
         </div>
         <div className="flex justify-between items-center mb-4">
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
             disabled={isLoading}
           >
             {isLoading ? 'Logging in...' : 'Login'}
           </button>
-          <Link 
-            to="/forgot-password" 
+          <Link
+            to="/forgot-password"
             className="text-blue-500 hover:text-blue-700"
           >
             Forgot Password?

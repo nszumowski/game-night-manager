@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const Logout = () => {
   const { logout } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     logout();
-    history.push('/');
-  }, [history, logout]);
+    navigate('/');
+  }, [navigate, logout]);
 
   return null;
 };

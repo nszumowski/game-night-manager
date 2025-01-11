@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
@@ -12,13 +12,13 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
   const { login } = useAuth();
   const { showNotification } = useNotification();
 
   const handleSubmit = async (e) => {
     console.log('handleSubmit called');
-    
+
     e.preventDefault();
     setError('');
     setIsLoading(true);
@@ -54,7 +54,7 @@ const Register = () => {
       if (response.data.success) {
         showNotification('Registration successful!', 'success');
         await login(email, password);
-        history.push('/profile');
+        navigate('/profile');
       }
     } catch (error) {
       console.error('Registration error:', error.response?.data || error.message);

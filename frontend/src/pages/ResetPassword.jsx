@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { useNotification } from '../contexts/NotificationContext';
 
 const ResetPassword = () => {
   const { token } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { showNotification } = useNotification();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -28,9 +28,9 @@ const ResetPassword = () => {
         token,
         newPassword
       });
-      
+
       showNotification('Password successfully reset!', 'success');
-      history.push('/login');
+      navigate('/login');
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to reset password');
       showNotification('Failed to reset password', 'error');
