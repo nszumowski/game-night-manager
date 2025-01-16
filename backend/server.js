@@ -1,41 +1,34 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const passport = require('passport');
-const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
+const passport = require('passport');
+const compression = require('compression');
+require('dotenv').config();
+
+// Import models first to ensure they're registered
+require('./models/User');
+require('./models/GameNight');
+require('./models/Game');
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(compression());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(passport.initialize());
+
+// Configure Passport
+require('./config/passport')(passport);
+
+// Import routes
 const users = require('./routes/users');
 const games = require('./routes/games');
 const friends = require('./routes/friends');
 const authRoutes = require('./routes/auth');
 const gameNights = require('./routes/game-nights');
-const path = require('path');
-const compression = require('compression');
-
-require('dotenv').config(); // Load .env file
-
-// Log environment variables during development
-if (process.env.NODE_ENV !== 'production') {
-  console.log('MONGO_URI:', process.env.MONGO_URI); // Verify MONGO_URI value
-  console.log('JWT_SECRET:', process.env.JWT_SECRET); // Verify JWT_SECRET value
-  console.log('PORT:', process.env.PORT); // Verify PORT value
-  console.log('NODE_ENV:', process.env.NODE_ENV); // Verify NODE_ENV value
-}
-
-// Register models
-require('./models/User');
-require('./models/Game');
-
-const app = express();
-app.use(compression());
-
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(passport.initialize());
-
-// Passport config
-require('./config/passport')(passport);
 
 // Routes
 app.use('/api/users', users);
@@ -44,32 +37,50 @@ app.use('/api/friends', friends);
 app.use('/api/auth', authRoutes);
 app.use('/api/game-nights', gameNights);
 
-// Add this before the static file middleware
-app.use('/uploads/profiles', (req, res, next) => {
-  console.log('Profile image requested:', req.url);
-  console.log('Full path:', path.join(__dirname, 'uploads', 'profiles', req.url));
-  next();
-}, express.static(path.join(__dirname, 'uploads', 'profiles')));
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
-// Serve the React app static files (if needed)
-app.use(express.static(path.join(__dirname, '../frontend/build')));
+// Static files middleware
+app.use('/uploads/profiles', express.static(path.join(__dirname, 'uploads', 'profiles')));
 
-// Catch-all route should be last
-app.get('*', (req, res) => {
-  // Only send index.html for non-API and non-static requests
+// Serve static files from the React app
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
+}
+
+// Catch-all route
+app.get('*path', (req, res) => {
+  // Only handle non-API and non-upload requests
   if (!req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
-    res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
+    if (process.env.NODE_ENV === 'production') {
+      res.sendFile(path.join(__dirname, '../frontend/build/index.html'));
+    } else {
+      res.status(404).json({ message: 'Not found' });
+    }
   } else {
-    res.status(404).send('Not found');
+    res.status(404).json({ message: 'Not found' });
   }
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something broke!' });
 });
 
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// Start the server
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+module.exports = app;
