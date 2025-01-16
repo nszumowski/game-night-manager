@@ -164,7 +164,7 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] **Implement image caching - clear game images viewed less than a month ago? unless a new version is in search or import? store locally?**
 - [ ] Users - Emails for friend requests and game night invitations
 - [ ] Games - icons for best with, min/max players, min/max playtime
-- [ ] Game Night - Add game night creation and management features
+- [ ] Games - mark games as favorite?
 - [ ] Game Night - Integrate messaging system or real-time chat for game nights
 - [ ] Game Night - Implement voting system for game selection - random, ranked, weighted? This is optional, the game manager can pick the game(s) or make a poll
 - [ ] Profile - Add game night history
@@ -172,6 +172,7 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] UI/UX - Sidebar for navigation w/ icons?
 - [ ] UI/UX - Utilise notification system for messages and errors
 - [ ] UI/UX - Consider profile and game list page skeletons while loading - currently css, what about react-content-loader
+- [ ] UI/UX - Mobile nav
 - [ ] Move other repeated featured to components
 - [ ] Turn game list into a Component to reuse on my games and friend profiles
 - [ ] Update stored game data from BGG API if changed during a search or import
@@ -180,6 +181,11 @@ This project is licensed under a Proprietary License Agreement - see the LICENSE
 - [ ] Develop mobile app versions (iOS/Android)
 - [ ] Add unit and integration tests
 - [ ] Use same email util for forgot password or anything else as used with game night invitations
+- [ ] Groups - add friends to groups, can invite groups to game nights - these are private to the group admin and for organizational purposes only?
+- [x] Game Night - Invite friends to game night
+- [x] Game Night - Edit game night
+- [x] Game Night - Delete game night
+- [x] Game Night - Create game night
 - [x] Users/Profile - Secure passwords when updating and registering
 - [x] Profile - Update Password functionality
 - [x] Profile - Forgot Password functionality
